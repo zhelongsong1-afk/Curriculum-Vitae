@@ -1,278 +1,614 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>宋哲龙 - Song Zhelong | Portfolio</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Profile — Liquid Void</title>
+
+  <!-- Tailwind (CDN) -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Playfair+Display:wght@400;700&family=Cormorant+Garamond:wght@300;400;600&display=swap" rel="stylesheet">
-  <script src="https://unpkg.com/lucide@latest"></script>
   <script>
     tailwind.config = {
       theme: {
         extend: {
           fontFamily: {
-            'script': ['"Great Vibes"', 'cursive'],
-            'display': ['"Playfair Display"', 'serif'],
-            'elegant': ['"Cormorant Garamond"', 'serif'],
-          },
+            display: ['ui-sans-serif', 'system-ui', 'Segoe UI', 'Inter', 'Helvetica Neue', 'Arial', 'Noto Sans', 'PingFang SC', 'Microsoft YaHei', 'sans-serif'],
+          }
         }
       }
     }
   </script>
+
+  <!-- GSAP + ScrollTrigger (CDN) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+
+  <!-- Vue 3 (CDN) -->
+  <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+
   <style>
-    :root {
-      --accent-primary: #ff9a9e;
-      --accent-secondary: #fad0c4;
+    :root{
+      --bg:#050505;
+      --fg:#F0F0F0;
+      --accent:#CCFF00;
+      --glass: rgba(255,255,255,0.06);
+      --glass2: rgba(255,255,255,0.10);
+      --border: rgba(255,255,255,0.10);
+      --shadow: 0 20px 80px rgba(0,0,0,0.55);
     }
-    * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-    body { overflow: hidden; height: 100vh; width: 100vw; background: #fffafb; font-family: 'Cormorant Garamond', serif; }
-
-    /* 高级感渐变背景 */
-    .mesh-gradient {
-      position: fixed;
-      inset: 0;
-      background-color: #ffffff;
-      background-image: 
-        radial-gradient(at 0% 0%, rgba(255,154,158,0.15) 0px, transparent 50%),
-        radial-gradient(at 100% 0%, rgba(161,196,253,0.15) 0px, transparent 50%),
-        radial-gradient(at 100% 100%, rgba(251,194,235,0.15) 0px, transparent 50%),
-        radial-gradient(at 0% 100%, rgba(254,207,239,0.15) 0px, transparent 50%);
-      z-index: -2;
+    html,body{height:100%;}
+    body{
+      margin:0;
+      background: var(--bg);
+      color: var(--fg);
+      overflow-x:hidden;
+      cursor:none; /* custom cursor */
     }
 
-    .horizontal-container {
-      display: flex;
-      width: 600vw;
-      height: 100vh;
+    /* Subtle noise */
+    .noise{
+      pointer-events:none;
+      position:fixed; inset:0;
+      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='260'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='260' height='260' filter='url(%23n)' opacity='.25'/%3E%3C/svg%3E");
+      mix-blend-mode:overlay;
+      opacity:.10;
+    }
+
+    /* Liquid void canvas */
+    #voidCanvas{
+      position:fixed; inset:0;
+      width:100%; height:100%;
+      z-index:0;
+      filter: blur(18px) saturate(1.2) contrast(1.05);
+      opacity:.9;
+    }
+
+    /* Glass surfaces */
+    .glass{
+      background: linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03));
+      border: 1px solid var(--border);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      box-shadow: var(--shadow);
+    }
+    .hairline{
+      background: linear-gradient(90deg, rgba(255,255,255,.0), rgba(255,255,255,.18), rgba(255,255,255,.0));
+      height:1px;
+      width:100%;
+      opacity:.7;
+    }
+
+    /* Custom cursor */
+    .cursor{
+      position:fixed; left:0; top:0;
+      width:18px; height:18px;
+      border-radius:999px;
+      pointer-events:none;
+      z-index:9999;
+      mix-blend-mode:difference;
+      background: rgba(240,240,240,0.95);
+      transform: translate(-50%,-50%);
+    }
+    .cursorRing{
+      position:fixed; left:0; top:0;
+      width:54px; height:54px;
+      border-radius:999px;
+      pointer-events:none;
+      z-index:9998;
+      border:1px solid rgba(240,240,240,0.55);
+      mix-blend-mode:difference;
+      transform: translate(-50%,-50%);
+      opacity:.9;
+    }
+
+    /* Smooth-ish scroll (lightweight) */
+    .smooth-wrap{
+      position:relative;
+      z-index:1;
+    }
+
+    /* Link magnetic */
+    .magnetic{
+      display:inline-flex;
+      align-items:center;
+      gap:.55rem;
       will-change: transform;
     }
 
-    .page-section {
-      width: 100vw;
-      height: 100vh;
-      flex-shrink: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 5vw;
+    /* Accent */
+    .accent{
+      color: var(--accent);
+    }
+    .accent-bg{
+      background: var(--accent);
+      color:#050505;
     }
 
-    /* 封面特殊效果 */
-    .hero-text {
-      background: linear-gradient(to right, #333, #777, #333);
-      background-size: 200% auto;
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      animation: shine 4s linear infinite;
-    }
-    @keyframes shine { to { background-position: 200% center; } }
-
-    /* 玻璃卡片优化 */
-    .glass-card {
-      background: rgba(255, 255, 255, 0.4);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border: 1px solid rgba(255, 255, 255, 0.6);
-      border-radius: 32px;
-      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.05);
-      transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
-    }
-    .glass-card:hover { transform: translateY(-5px); border-color: var(--accent-primary); }
-
-    /* 导航指示器 */
-    .indicator-active {
-      width: 24px !important;
-      border-radius: 4px !important;
-      background: #333 !important;
+    /* Hero title glow */
+    .hero-title{
+      letter-spacing:-0.04em;
+      text-shadow:
+        0 0 10px rgba(204,255,0,0.10),
+        0 0 50px rgba(204,255,0,0.08),
+        0 0 120px rgba(204,255,0,0.06);
     }
 
-    /* 视差背景球 */
-    .orb {
-      position: absolute;
-      border-radius: 50%;
-      filter: blur(80px);
-      z-index: -1;
-      opacity: 0.4;
+    /* Timeline */
+    .timeline{
+      position:relative;
+    }
+    .timeline:before{
+      content:"";
+      position:absolute;
+      left:1.25rem;
+      top:0; bottom:0;
+      width:1px;
+      background: rgba(255,255,255,0.14);
+    }
+    .tl-item{
+      position:relative;
+      transition: opacity .25s ease, transform .25s ease, filter .25s ease;
+    }
+    .tl-dot{
+      position:absolute;
+      left:1.25rem;
+      top:1.1rem;
+      transform: translate(-50%,-50%);
+      width:10px; height:10px;
+      border-radius:999px;
+      background: rgba(240,240,240,0.9);
+      box-shadow: 0 0 0 6px rgba(204,255,0,0.06);
+    }
+    .tl-item.is-dim{
+      opacity:.28;
+      filter:saturate(.7);
     }
 
-    /* 响应式调整 */
-    @media (max-width: 768px) {
-      .page-section { padding: 2rem 1rem; }
-      .glass-card { width: 95vw; }
+    /* Marquee */
+    .marquee{
+      mask-image: linear-gradient(90deg, transparent, black 12%, black 88%, transparent);
+      -webkit-mask-image: linear-gradient(90deg, transparent, black 12%, black 88%, transparent);
+    }
+    .marquee-track{
+      display:flex;
+      gap:1.25rem;
+      width:max-content;
+      will-change: transform;
+      animation: marquee 18s linear infinite;
+    }
+    .marquee:hover .marquee-track{ animation-play-state:paused; }
+    @keyframes marquee{
+      from{ transform: translateX(0); }
+      to{ transform: translateX(-50%); }
+    }
+
+    /* Subtle grid */
+    .grid-overlay{
+      pointer-events:none;
+      position:fixed; inset:0;
+      z-index:0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.06) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.06) 1px, transparent 1px);
+      background-size: 56px 56px;
+      opacity:.08;
+      mask-image: radial-gradient(closest-side, rgba(0,0,0,0.0), rgba(0,0,0,1));
+      -webkit-mask-image: radial-gradient(closest-side, rgba(0,0,0,0.0), rgba(0,0,0,1));
     }
   </style>
 </head>
+
 <body>
-  <div id="app" @wheel="handleWheel">
-    <div class="mesh-gradient"></div>
-    
-    <div class="orb w-96 h-96 bg-pink-200 -top-20 -left-20" :style="parallaxStyle(0.1)"></div>
-    <div class="orb w-80 h-80 bg-blue-100 top-1/2 -right-20" :style="parallaxStyle(0.2)"></div>
+  <canvas id="voidCanvas"></canvas>
+  <div class="grid-overlay"></div>
+  <div class="noise"></div>
 
-    <div class="fixed top-0 left-0 h-1 bg-gradient-to-right from-pink-300 to-purple-300 z-50 transition-all duration-300" :style="{ width: `${((currentPage + 1) / totalPages) * 100}%` }"></div>
+  <!-- Custom cursor -->
+  <div class="cursor" id="cursor"></div>
+  <div class="cursorRing" id="cursorRing"></div>
 
-    <div class="fixed right-8 top-1/2 -translate-y-1/2 flex flex-col gap-4 z-40">
-      <div 
-        v-for="n in totalPages" 
-        :key="n-1"
-        class="w-1.5 h-1.5 rounded-full bg-gray-300 cursor-pointer transition-all duration-500"
-        :class="{ 'indicator-active': currentPage === n-1 }"
-        @click="goToPage(n-1)">
+  <div id="app" class="smooth-wrap">
+    <!-- Top nav -->
+    <header class="mx-auto max-w-6xl px-6 pt-6">
+      <div class="glass rounded-2xl px-5 py-4 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-2.5 h-2.5 rounded-full" :style="{ background: profileData.theme.accent }"></div>
+          <div class="text-sm opacity-80 tracking-wide">
+            <span class="opacity-60">/</span>
+            <span class="ml-2">{{ profileData.role }}</span>
+          </div>
+        </div>
+
+        <nav class="flex items-center gap-5 text-sm">
+          <a href="#about" class="magnetic opacity-80 hover:opacity-100 transition">About</a>
+          <a href="#experience" class="magnetic opacity-80 hover:opacity-100 transition">Experience</a>
+          <a href="#skills" class="magnetic opacity-80 hover:opacity-100 transition">Skills</a>
+          <a href="#contact" class="magnetic px-3 py-1.5 rounded-xl border border-white/15 hover:border-white/30 transition"
+             :style="{ boxShadow: '0 0 0 0 rgba(204,255,0,0.0)'}">
+            Contact
+            <span class="inline-block w-1.5 h-1.5 rounded-full" :style="{ background: profileData.theme.accent }"></span>
+          </a>
+        </nav>
       </div>
-    </div>
+    </header>
 
-    <div class="horizontal-container" :style="containerStyle">
-      
-      <section class="page-section">
-        <div class="text-center space-y-6">
-          <div class="relative inline-block group" @click="triggerFileInput">
-            <div class="absolute inset-0 bg-pink-200 rounded-full blur-2xl opacity-0 group-hover:opacity-40 transition-opacity duration-500"></div>
-            <div class="w-32 h-32 md:w-44 md:h-44 rounded-full border-4 border-white shadow-2xl overflow-hidden relative z-10 cursor-pointer">
-              <img v-if="avatarUrl" :src="avatarUrl" class="w-full h-full object-cover">
-              <div v-else class="w-full h-full bg-gray-50 flex items-center justify-center text-gray-400">
-                <i data-lucide="user-plus"></i>
+    <!-- Hero -->
+    <main class="mx-auto max-w-6xl px-6">
+      <section class="pt-20 pb-12">
+        <div class="relative">
+          <div class="absolute -inset-6 rounded-[2.25rem] blur-2xl opacity-30"
+               :style="{ background: 'radial-gradient(circle at 30% 20%, ' + profileData.theme.accent + '33, transparent 55%), radial-gradient(circle at 70% 80%, rgba(255,255,255,0.10), transparent 60%)' }">
+          </div>
+
+          <div class="glass rounded-[2.25rem] p-10 md:p-14 relative overflow-hidden">
+            <div class="flex flex-col gap-10">
+              <div class="flex items-start justify-between gap-8 flex-wrap">
+                <div class="min-w-[240px]">
+                  <div class="text-xs tracking-[0.22em] uppercase opacity-70">
+                    {{ profileData.tagline }}
+                  </div>
+
+                  <h1 class="hero-title font-display text-[clamp(2.8rem,6.5vw,6.2rem)] leading-[0.95] mt-4">
+                    <span class="inline-block heroName">{{ profileData.name }}</span>
+                  </h1>
+
+                  <div class="mt-5 text-lg md:text-xl opacity-85">
+                    <span class="inline-block heroRole">{{ profileData.role }}</span>
+                    <span class="opacity-50 mx-2">•</span>
+                    <span class="opacity-70">{{ profileData.city }}</span>
+                  </div>
+
+                  <p class="mt-6 max-w-2xl text-base md:text-lg opacity-70 leading-relaxed heroSummary">
+                    {{ profileData.summary }}
+                  </p>
+
+                  <div class="mt-8 flex flex-wrap items-center gap-3">
+                    <a class="magnetic accent-bg px-4 py-2.5 rounded-xl font-medium text-sm md:text-base"
+                       :href="profileData.links.primaryUrl"
+                       target="_blank" rel="noreferrer">
+                      {{ profileData.links.primaryLabel }}
+                      <span class="opacity-70">↗</span>
+                    </a>
+                    <a class="magnetic px-4 py-2.5 rounded-xl border border-white/15 hover:border-white/30 transition text-sm md:text-base"
+                       :href="'mailto:' + profileData.contact.email">
+                      Email
+                    </a>
+                    <a class="magnetic px-4 py-2.5 rounded-xl border border-white/15 hover:border-white/30 transition text-sm md:text-base"
+                       v-if="profileData.contact.resumePdf"
+                       :href="profileData.contact.resumePdf" target="_blank" rel="noreferrer">
+                      Resume
+                    </a>
+                  </div>
+                </div>
+
+                <div class="flex-1 min-w-[260px]">
+                  <div class="grid grid-cols-2 gap-3">
+                    <div class="glass rounded-2xl p-4">
+                      <div class="text-xs opacity-60 tracking-wide">Years</div>
+                      <div class="text-2xl md:text-3xl mt-1">{{ profileData.yearsExperience }}+</div>
+                      <div class="text-xs opacity-60 mt-1">experience</div>
+                    </div>
+                    <div class="glass rounded-2xl p-4">
+                      <div class="text-xs opacity-60 tracking-wide">Focus</div>
+                      <div class="text-2xl md:text-3xl mt-1">{{ profileData.focus }}</div>
+                      <div class="text-xs opacity-60 mt-1">specialty</div>
+                    </div>
+                    <div class="glass rounded-2xl p-4 col-span-2">
+                      <div class="text-xs opacity-60 tracking-wide">Signature</div>
+                      <div class="mt-2 flex flex-wrap gap-2">
+                        <span v-for="(k,i) in profileData.signatureKeywords" :key="i"
+                              class="px-3 py-1.5 rounded-xl border border-white/15 text-sm opacity-90">
+                          {{ k }}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="hairline"></div>
+
+              <div class="flex flex-wrap items-center justify-between gap-4 text-sm opacity-75">
+                <div class="flex flex-wrap gap-4">
+                  <span class="opacity-60">Social:</span>
+                  <a v-for="s in profileData.social" :key="s.label"
+                     class="magnetic hover:opacity-100 transition opacity-80"
+                     :href="s.url" target="_blank" rel="noreferrer">
+                    {{ s.label }} ↗
+                  </a>
+                </div>
+                <div class="opacity-60">
+                  Scroll
+                  <span class="inline-block ml-1 opacity-80">↓</span>
+                </div>
               </div>
             </div>
-            <input ref="fileInput" type="file" class="hidden" @change="handleFileChange">
-          </div>
-          
-          <div class="space-y-2">
-            <h1 class="text-6xl md:text-8xl font-script hero-text">宋哲龙</h1>
-            <p class="text-lg md:text-xl tracking-[0.4em] text-gray-400 font-light uppercase">Song Zhelong</p>
-          </div>
 
-          <div class="pt-8 flex flex-col items-center gap-3">
-             <a href="mailto:202421002662@mail.scut.edu.cn" class="group flex items-center gap-3 px-6 py-3 rounded-full bg-white/50 border border-white hover:border-pink-200 transition-all shadow-sm">
-                <i data-lucide="mail" class="w-4 h-4 text-pink-400"></i>
-                <span class="text-gray-600 font-elegant tracking-wider">202421002662@mail.scut.edu.cn</span>
-                <i data-lucide="arrow-up-right" class="w-3 h-3 opacity-0 group-hover:opacity-100 transition-all"></i>
-             </a>
-             <p class="text-xs text-gray-400 uppercase tracking-widest">SCUT · Mechanical Engineering</p>
+            <!-- Floating highlight -->
+            <div class="absolute -right-24 -bottom-28 w-[520px] h-[520px] rounded-full blur-3xl opacity-25"
+                 :style="{ background: 'radial-gradient(circle, ' + profileData.theme.accent + '55, transparent 60%)' }"></div>
           </div>
         </div>
       </section>
 
-      <section class="page-section">
-        <div class="glass-card p-8 md:p-12 max-w-4xl flex flex-col md:flex-row gap-10">
-          <div class="md:w-1/3">
-             <h2 class="text-4xl font-display font-bold text-gray-800 leading-tight">关于我<br><span class="text-pink-300">About</span></h2>
-             <div class="h-1 w-12 bg-pink-200 mt-4"></div>
+      <!-- About (Bento Grid) -->
+      <section id="about" class="py-14">
+        <div class="flex items-end justify-between gap-6 flex-wrap">
+          <div>
+            <div class="text-xs tracking-[0.22em] uppercase opacity-60">About</div>
+            <h2 class="text-3xl md:text-4xl font-display mt-2">A calm surface, liquid depth.</h2>
           </div>
-          <div class="md:w-2/3 space-y-6">
-            <p class="text-lg text-gray-600 leading-relaxed font-elegant">
-              专注于<span class="underline decoration-pink-200 underline-offset-4">激光增材制造</span>与<span class="underline decoration-pink-200 underline-offset-4">焊接机器人</span>技术研究。致力于通过先进的运动规划算法提升工业制造的智能化水平。
+          <div class="opacity-60 text-sm max-w-xl">
+            {{ profileData.aboutNote }}
+          </div>
+        </div>
+
+        <div class="mt-8 grid grid-cols-1 md:grid-cols-12 gap-4">
+          <div class="glass rounded-2xl p-6 md:col-span-7">
+            <div class="text-xs opacity-60 tracking-wide">Bio</div>
+            <p class="mt-3 text-base md:text-lg leading-relaxed opacity-80">
+              {{ profileData.about.bio }}
             </p>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-               <div class="bg-white/30 p-4 rounded-2xl border border-white/50">
-                  <span class="text-[10px] text-gray-400 uppercase tracking-widest block mb-1">Education</span>
-                  <p class="font-display font-semibold">华南理工大学 (SCUT)</p>
-               </div>
-               <div class="bg-white/30 p-4 rounded-2xl border border-white/50">
-                  <span class="text-[10px] text-gray-400 uppercase tracking-widest block mb-1">Supervisor</span>
-                  <p class="font-display font-semibold">王振民 教授</p>
-               </div>
+          </div>
+
+          <div class="glass rounded-2xl p-6 md:col-span-5">
+            <div class="text-xs opacity-60 tracking-wide">Highlights</div>
+            <ul class="mt-3 space-y-2 text-sm md:text-base opacity-85">
+              <li v-for="(h,i) in profileData.about.highlights" :key="i" class="flex gap-3">
+                <span class="mt-1 w-1.5 h-1.5 rounded-full" :style="{ background: profileData.theme.accent }"></span>
+                <span>{{ h }}</span>
+              </li>
+            </ul>
+          </div>
+
+          <div class="glass rounded-2xl p-6 md:col-span-4">
+            <div class="text-xs opacity-60 tracking-wide">Location</div>
+            <div class="mt-2 text-2xl">{{ profileData.city }}</div>
+            <div class="mt-2 text-sm opacity-70">{{ profileData.about.locationDetail }}</div>
+          </div>
+
+          <div class="glass rounded-2xl p-6 md:col-span-4">
+            <div class="text-xs opacity-60 tracking-wide">Availability</div>
+            <div class="mt-2 text-2xl">{{ profileData.about.availability }}</div>
+            <div class="mt-2 text-sm opacity-70">{{ profileData.about.availabilityNote }}</div>
+          </div>
+
+          <div class="glass rounded-2xl p-6 md:col-span-4">
+            <div class="text-xs opacity-60 tracking-wide">Currently</div>
+            <div class="mt-2 text-2xl">{{ profileData.about.currently }}</div>
+            <div class="mt-2 text-sm opacity-70">{{ profileData.about.currentlyNote }}</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Experience -->
+      <section id="experience" class="py-14">
+        <div class="flex items-end justify-between gap-6 flex-wrap">
+          <div>
+            <div class="text-xs tracking-[0.22em] uppercase opacity-60">Experience</div>
+            <h2 class="text-3xl md:text-4xl font-display mt-2">A minimal timeline.</h2>
+          </div>
+          <div class="opacity-60 text-sm max-w-xl">
+            Hover a role to focus. Others will fade into the void.
+          </div>
+        </div>
+
+        <div class="mt-10 glass rounded-2xl p-6 md:p-8">
+          <div class="timeline space-y-4" @mouseleave="activeExpIndex = -1">
+            <div v-for="(e, idx) in profileData.experience" :key="idx"
+                 class="tl-item rounded-2xl p-5 md:p-6 border border-white/10 hover:border-white/25 cursor-none"
+                 :class="{ 'is-dim': activeExpIndex !== -1 && activeExpIndex !== idx }"
+                 @mouseenter="activeExpIndex = idx">
+              <div class="tl-dot"></div>
+
+              <div class="flex items-start justify-between gap-6 flex-wrap">
+                <div>
+                  <div class="text-xs opacity-60 tracking-wide">{{ e.period }}</div>
+                  <div class="mt-1 text-xl md:text-2xl">
+                    <span class="font-medium">{{ e.title }}</span>
+                    <span class="opacity-50 mx-2">/</span>
+                    <span class="opacity-75">{{ e.company }}</span>
+                  </div>
+                  <div class="mt-2 text-sm opacity-70">{{ e.location }}</div>
+                </div>
+
+                <div class="flex flex-wrap gap-2">
+                  <span v-for="(t,i) in e.tags" :key="i"
+                        class="px-3 py-1.5 rounded-xl border border-white/15 text-xs md:text-sm opacity-90">
+                    {{ t }}
+                  </span>
+                </div>
+              </div>
+
+              <ul class="mt-4 space-y-2 text-sm md:text-base opacity-80 leading-relaxed">
+                <li v-for="(b,i) in e.bullets" :key="i" class="flex gap-3">
+                  <span class="mt-2 w-1.5 h-1.5 rounded-full" :style="{ background: profileData.theme.accent }"></span>
+                  <span>{{ b }}</span>
+                </li>
+              </ul>
+
+              <div class="mt-4 flex flex-wrap gap-3">
+                <a v-for="(l,i) in e.links" :key="i"
+                   class="magnetic text-sm opacity-80 hover:opacity-100 transition"
+                   :href="l.url" target="_blank" rel="noreferrer">
+                  {{ l.label }} ↗
+                </a>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
-      <section class="page-section" v-for="section in ['Experience', 'Honors', 'Portfolio', 'Contact']">
-         <div class="glass-card p-8 w-full max-w-4xl">
-            <h2 class="text-3xl font-display mb-8">{{ section }}</h2>
-            <div v-if="section === 'Contact'" class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div v-for="item in contactData" class="flex items-center gap-4 p-4 bg-white/40 rounded-2xl">
-                    <div class="w-10 h-10 rounded-xl bg-pink-100 flex items-center justify-center text-pink-500">
-                        <i :data-lucide="item.icon"></i>
-                    </div>
-                    <div>
-                        <p class="text-[10px] text-gray-400 uppercase">{{ item.label }}</p>
-                        <p class="font-elegant font-bold">{{ item.value }}</p>
-                    </div>
+      <!-- Skills (Marquee) -->
+      <section id="skills" class="py-14">
+        <div class="flex items-end justify-between gap-6 flex-wrap">
+          <div>
+            <div class="text-xs tracking-[0.22em] uppercase opacity-60">Skills</div>
+            <h2 class="text-3xl md:text-4xl font-display mt-2">A perpetual signal.</h2>
+          </div>
+          <div class="opacity-60 text-sm max-w-xl">
+            Infinite marquee. Pause on hover.
+          </div>
+        </div>
+
+        <div class="mt-8 glass rounded-2xl p-6 md:p-8">
+          <div class="marquee">
+            <div class="marquee-track">
+              <!-- Duplicate list twice for seamless loop -->
+              <template v-for="rep in 2" :key="rep">
+                <div v-for="(s,i) in profileData.skills" :key="rep+'-'+i"
+                     class="flex items-center gap-3 px-4 py-3 rounded-2xl border border-white/10">
+                  <span class="w-1.5 h-1.5 rounded-full" :style="{ background: profileData.theme.accent }"></span>
+                  <span class="text-base md:text-lg opacity-90 whitespace-nowrap">{{ s }}</span>
                 </div>
+              </template>
             </div>
-            <p v-else class="text-gray-400 italic font-elegant">内容正在载入中...</p>
-         </div>
+          </div>
+
+          <div class="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="glass rounded-2xl p-5 border border-white/10">
+              <div class="text-xs opacity-60 tracking-wide">Toolbox</div>
+              <div class="mt-2 text-sm opacity-80 leading-relaxed">
+                {{ profileData.skillsNote }}
+              </div>
+            </div>
+            <div class="glass rounded-2xl p-5 border border-white/10">
+              <div class="text-xs opacity-60 tracking-wide">Strength</div>
+              <div class="mt-2 text-sm opacity-80 leading-relaxed">
+                {{ profileData.strengthNote }}
+              </div>
+            </div>
+            <div class="glass rounded-2xl p-5 border border-white/10">
+              <div class="text-xs opacity-60 tracking-wide">Preference</div>
+              <div class="mt-2 text-sm opacity-80 leading-relaxed">
+                {{ profileData.preferenceNote }}
+              </div>
+            </div>
+          </div>
+        </div>
       </section>
 
-    </div>
+      <!-- Footer Contact (Half-screen big) -->
+      <section id="contact" class="py-14 pb-24">
+        <div class="glass rounded-[2.25rem] p-10 md:p-14 overflow-hidden relative min-h-[50vh] flex flex-col justify-between">
+          <div class="absolute -left-24 -top-28 w-[560px] h-[560px] rounded-full blur-3xl opacity-20"
+               :style="{ background: 'radial-gradient(circle, ' + profileData.theme.accent + '44, transparent 60%)' }"></div>
+
+          <div>
+            <div class="text-xs tracking-[0.22em] uppercase opacity-60">Contact</div>
+            <div class="mt-4 text-[clamp(2.4rem,5.2vw,4.6rem)] leading-[0.95] font-display">
+              <span class="block opacity-90">Let’s build</span>
+              <span class="block accent font-semibold">something unreal.</span>
+            </div>
+          </div>
+
+          <div class="mt-10 flex flex-col gap-5">
+            <a class="magnetic text-xl md:text-2xl opacity-90 hover:opacity-100 transition"
+               :href="'mailto:' + profileData.contact.email">
+              {{ profileData.contact.email }}
+            </a>
+
+            <div class="flex flex-wrap gap-4">
+              <a v-for="s in profileData.social" :key="s.label"
+                 class="magnetic px-4 py-2.5 rounded-xl border border-white/15 hover:border-white/30 transition text-sm md:text-base"
+                 :href="s.url" target="_blank" rel="noreferrer">
+                {{ s.label }} ↗
+              </a>
+            </div>
+
+            <div class="opacity-50 text-xs">
+              © {{ new Date().getFullYear() }} {{ profileData.name }} — Liquid Void Edition
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
   </div>
 
   <script>
-    const { createApp, ref, computed, onMounted } = Vue;
-    createApp({
-      setup() {
-        const currentPage = ref(0);
-        const totalPages = 6;
-        const avatarUrl = ref(localStorage.getItem('avatarUrl') || null);
-        const fileInput = ref(null);
-        let isAnimating = false;
+    /**
+     * =========================
+     * Easy Config: profileData
+     * =========================
+     * 你把简历内容填进这里即可。
+     * 上传简历后，我也可以帮你自动提取并完整填好这一块。
+     */
+    const profileData = {
+      // 基本信息
+      name: "Your Name",
+      role: "Your Title / Position",
+      city: "City, Country",
+      yearsExperience: 3,
+      focus: "Frontend",
+      tagline: "LIQUID VOID / GLASS / MOTION",
+      summary: "一句话简介：你做什么、擅长什么、带来什么价值（建议 1-2 句，干净有力）。",
 
-        const containerStyle = computed(() => ({
-          transform: `translateX(-${currentPage.value * 100}vw)`,
-          transition: 'transform 1s cubic-bezier(0.23, 1, 0.32, 1)'
-        }));
+      // 主题配色（按你的要求默认写好）
+      theme: {
+        background: "#050505",
+        text: "#F0F0F0",
+        accent: "#CCFF00"
+      },
 
-        const parallaxStyle = (speed) => ({
-          transform: `translateX(${currentPage.value * 100 * speed}px)`,
-          transition: 'transform 1.2s cubic-bezier(0.23, 1, 0.32, 1)'
-        });
+      // Hero按钮（主链接）
+      links: {
+        primaryLabel: "View Work",
+        primaryUrl: "https://your-portfolio-link.com"
+      },
 
-        // 核心交互：滚轮翻页
-        const handleWheel = (e) => {
-          if (isAnimating) return;
-          if (Math.abs(e.deltaY) < 30) return; // 忽略微小滚动
+      // About
+      aboutNote: "用 Bento Grid 呈现信息密度：简洁、克制、但质感很足。",
+      about: {
+        bio: "这里放你的自我介绍（简历 summary / profile）。建议 3-5 句，强调你的方向、影响力、代表性成果。",
+        highlights: [
+          "亮点 1：量化成果或影响（例如性能提升、转化率、体验升级）",
+          "亮点 2：擅长的系统/产品类型（例如 B2B 控制台、增长页面、创意互动）",
+          "亮点 3：协作方式（跨团队、设计/后端、推动落地）"
+        ],
+        locationDetail: "Remote / Hybrid / On-site（可选）",
+        availability: "Open to opportunities",
+        availabilityNote: "期望岗位/合作形式（可选）",
+        currently: "Building & shipping",
+        currentlyNote: "最近在做什么（可选，1 句）"
+      },
 
-          if (e.deltaY > 0 && currentPage.value < totalPages - 1) {
-            navigate(1);
-          } else if (e.deltaY < 0 && currentPage.value > 0) {
-            navigate(-1);
-          }
-        };
+      // Experience 时间线（从最近到最早）
+      experience: [
+        {
+          period: "2024 — Present",
+          title: "Senior Frontend Engineer",
+          company: "Company Name",
+          location: "City / Remote",
+          tags: ["Vue", "GSAP", "Performance", "Design Systems"],
+          bullets: [
+            "负责 XXX 模块/产品：做了什么 + 结果（尽量量化）。",
+            "重构/搭建设计系统或组件库：减少重复劳动、提升一致性。",
+            "性能优化：LCP/CLS/TTI 改善到某个指标（可选）。"
+          ],
+          links: [
+            { label: "Product", url: "https://example.com" }
+          ]
+        },
+        {
+          period: "2022 — 2024",
+          title: "Frontend Engineer",
+          company: "Company Name",
+          location: "City",
+          tags: ["React", "TypeScript", "Animation"],
+          bullets: [
+            "完成关键项目交付：业务目标、约束、你如何解决。",
+            "与设计/产品协作：把复杂信息做成更清晰的体验。"
+          ],
+          links: []
+        }
+      ],
 
-        const navigate = (direction) => {
-          isAnimating = true;
-          currentPage.value += direction;
-          setTimeout(() => { isAnimating = false; }, 1000);
-        };
-
-        const goToPage = (index) => {
-          currentPage.value = index;
-        };
-
-        const triggerFileInput = () => fileInput.value.click();
-        const handleFileChange = (e) => {
-          const file = e.target.files[0];
-          if (file) {
-            const reader = new FileReader();
-            reader.onload = (ev) => {
-              avatarUrl.value = ev.target.result;
-              localStorage.setItem('avatarUrl', ev.target.result);
-            };
-            reader.readAsDataURL(file);
-          }
-        };
-
-        const contactData = [
-            { label: 'Email', value: '202421002662@mail.scut.edu.cn', icon: 'mail' },
-            { label: 'Phone', value: '18272471376', icon: 'phone' },
-            { label: 'Location', value: '湖北襄阳 · Xiangyang', icon: 'map-pin' },
-            { label: 'Birth', value: '2000年8月', icon: 'calendar' }
-        ];
-
-        onMounted(() => {
-          lucide.createIcons();
-        });
-
-        return { 
-          currentPage, totalPages, containerStyle, parallaxStyle,
-          handleWheel, goToPage, avatarUrl, fileInput, triggerFileInput, 
-          handleFileChange, contactData
-        };
-      }
-    }).mount('#app');
-  </script>
-</body>
-</html>
+      // Skills 跑马灯关键词（尽量短、密、好看）
+      skills: [
+        "Vue 3", "Composition API", "TypeScript", "Tailwind CSS", "GSAP",
+        "WebGL / Canvas", "Motion Design", "Performance", "Accessibility",
+        "Design Systems", "Vite (optional)", "Node.js", "REST / GraphQL"
+      ],
+      skillsNote: "偏好把「动效」当作信息架构的一部分，而不是装饰。",
+      strengthNote: "强项：复杂信息的可视化、交互节奏、工程化与体验的一致性。",
+      preferenceNote: "喜欢做：高质感落地页、产品主站、交互原
