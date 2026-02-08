@@ -3,25 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>宋哲龙 - Song Zhelong</title>
-  
-  <!-- Tailwind CSS -->
+  <title>宋哲龙 - Song Zhelong | Portfolio</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  
-  <!-- Vue 3 -->
   <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
-  
-  <!-- GSAP -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-  
-  <!-- Google Fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Playfair+Display:wght@400;600&family=Cormorant+Garamond:wght@400;600&display=swap" rel="stylesheet">
-  
-  <!-- Lucide Icons -->
+  <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Playfair+Display:wght@400;700&family=Cormorant+Garamond:wght@300;400;600&display=swap" rel="stylesheet">
   <script src="https://unpkg.com/lucide@latest"></script>
-  
   <script>
     tailwind.config = {
       theme: {
@@ -35,74 +22,34 @@
       }
     }
   </script>
-  
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      -webkit-tap-highlight-color: transparent;
+    :root {
+      --accent-primary: #ff9a9e;
+      --accent-secondary: #fad0c4;
     }
-    
-    html, body {
-      font-family: 'Inter', system-ui, sans-serif;
-      overflow: hidden;
-      height: 100%;
-      width: 100%;
-      touch-action: pan-y;
-    }
-    
-    /* Animated Gradient Background */
-    .gradient-bg {
+    * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    body { overflow: hidden; height: 100vh; width: 100vw; background: #fffafb; font-family: 'Cormorant Garamond', serif; }
+
+    /* 高级感渐变背景 */
+    .mesh-gradient {
       position: fixed;
       inset: 0;
-      background: 
-        radial-gradient(ellipse at 20% 30%, rgba(255, 182, 193, 0.6) 0%, transparent 50%),
-        radial-gradient(ellipse at 80% 20%, rgba(173, 216, 230, 0.5) 0%, transparent 45%),
-        radial-gradient(ellipse at 40% 80%, rgba(255, 218, 185, 0.5) 0%, transparent 50%),
-        radial-gradient(ellipse at 70% 70%, rgba(221, 160, 221, 0.4) 0%, transparent 45%),
-        radial-gradient(ellipse at 10% 60%, rgba(255, 160, 122, 0.4) 0%, transparent 40%),
-        linear-gradient(135deg, #fef9f6 0%, #fff5f5 25%, #f0f8ff 50%, #faf5ff 75%, #fff8f0 100%);
-      animation: gradientMove 20s ease-in-out infinite;
-      z-index: -1;
+      background-color: #ffffff;
+      background-image: 
+        radial-gradient(at 0% 0%, rgba(255,154,158,0.15) 0px, transparent 50%),
+        radial-gradient(at 100% 0%, rgba(161,196,253,0.15) 0px, transparent 50%),
+        radial-gradient(at 100% 100%, rgba(251,194,235,0.15) 0px, transparent 50%),
+        radial-gradient(at 0% 100%, rgba(254,207,239,0.15) 0px, transparent 50%);
+      z-index: -2;
     }
-    
-    @keyframes gradientMove {
-      0%, 100% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-    }
-    
-    /* Floating Orbs */
-    .floating-orb {
-      position: fixed;
-      border-radius: 50%;
-      filter: blur(60px);
-      opacity: 0.5;
-      animation: float 15s ease-in-out infinite;
-      pointer-events: none;
-    }
-    
-    .orb-1 { width: 400px; height: 400px; background: linear-gradient(135deg, #ffb6c1, #ffc0cb); top: -100px; left: -100px; }
-    .orb-2 { width: 350px; height: 350px; background: linear-gradient(135deg, #add8e6, #e6e6fa); top: 20%; right: -80px; animation-delay: -5s; }
-    .orb-3 { width: 300px; height: 300px; background: linear-gradient(135deg, #ffdab9, #ffe4b5); bottom: 10%; left: 10%; animation-delay: -10s; }
-    .orb-4 { width: 250px; height: 250px; background: linear-gradient(135deg, #dda0dd, #e6e6fa); bottom: 20%; right: 15%; animation-delay: -7s; }
-    
-    @keyframes float {
-      0%, 100% { transform: translate(0, 0) scale(1); }
-      25% { transform: translate(30px, -30px) scale(1.05); }
-      50% { transform: translate(-20px, 20px) scale(0.95); }
-      75% { transform: translate(20px, 30px) scale(1.02); }
-    }
-    
-    /* Horizontal Scroll Container */
+
     .horizontal-container {
       display: flex;
       width: 600vw;
       height: 100vh;
-      transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
       will-change: transform;
     }
-    
+
     .page-section {
       width: 100vw;
       height: 100vh;
@@ -110,1035 +57,219 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 2rem;
-      position: relative;
-      overflow-y: auto;
-      -webkit-overflow-scrolling: touch;
+      padding: 5vw;
     }
-    
-    /* Navigation Arrows */
-    .nav-arrow {
-      position: fixed;
-      top: 50%;
-      transform: translateY(-50%);
-      width: 48px;
-      height: 48px;
-      border-radius: 50%;
-      background: rgba(255, 255, 255, 0.8);
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(255, 255, 255, 0.6);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      z-index: 100;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-    }
-    
-    .nav-arrow:hover, .nav-arrow:active {
-      background: rgba(255, 255, 255, 0.95);
-      transform: translateY(-50%) scale(1.1);
-    }
-    
-    .nav-arrow.left { left: 1rem; }
-    .nav-arrow.right { right: 1rem; }
-    .nav-arrow.disabled { opacity: 0.3; pointer-events: none; }
-    
-    /* Page Indicators */
-    .page-indicators {
-      position: fixed;
-      bottom: 1.5rem;
-      left: 50%;
-      transform: translateX(-50%);
-      display: flex;
-      gap: 10px;
-      z-index: 100;
-      padding: 10px 16px;
-      background: rgba(255, 255, 255, 0.6);
-      backdrop-filter: blur(10px);
-      border-radius: 100px;
-      border: 1px solid rgba(255, 255, 255, 0.6);
-    }
-    
-    .indicator {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: rgba(0, 0, 0, 0.15);
-      cursor: pointer;
-      transition: all 0.3s ease;
-    }
-    
-    .indicator.active {
-      background: linear-gradient(135deg, #ff9a9e, #fecfef);
-      transform: scale(1.3);
-    }
-    
-    /* Script Name */
-    .script-name {
-      font-family: 'Great Vibes', cursive;
-      font-size: 4rem;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #f5576c 75%, #667eea 100%);
+
+    /* 封面特殊效果 */
+    .hero-text {
+      background: linear-gradient(to right, #333, #777, #333);
       background-size: 200% auto;
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
-      background-clip: text;
-      animation: gradientFlow 4s ease infinite;
+      animation: shine 4s linear infinite;
     }
-    
-    @keyframes gradientFlow {
-      0% { background-position: 0% center; }
-      50% { background-position: 100% center; }
-      100% { background-position: 0% center; }
-    }
-    
-    .english-name {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 1.25rem;
-      font-weight: 400;
-      letter-spacing: 0.3em;
-      color: #8b8b8b;
-      text-transform: uppercase;
-    }
-    
-    /* Avatar */
-    .avatar-container {
-      position: relative;
-      width: 140px;
-      height: 140px;
-      border-radius: 50%;
-      overflow: hidden;
-      cursor: pointer;
-      transition: all 0.4s ease;
-      border: 3px solid rgba(255, 255, 255, 0.8);
-      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
-    }
-    
-    .avatar-container:active { transform: scale(0.95); }
-    
-    .avatar-image { width: 100%; height: 100%; object-fit: cover; }
-    
-    .avatar-placeholder {
-      width: 100%;
-      height: 100%;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      background: linear-gradient(135deg, rgba(255,255,255,0.9), rgba(255,255,255,0.7));
-      color: #a0a0a0;
-    }
-    
-    .avatar-overlay {
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(135deg, rgba(255, 154, 158, 0.9), rgba(254, 207, 239, 0.9));
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      opacity: 0;
-      transition: opacity 0.3s ease;
-      color: white;
-    }
-    
-    .avatar-container:hover .avatar-overlay, .avatar-container:active .avatar-overlay { opacity: 1; }
-    
-    /* Glass Card */
+    @keyframes shine { to { background-position: 200% center; } }
+
+    /* 玻璃卡片优化 */
     .glass-card {
-      background: rgba(255, 255, 255, 0.7);
-      backdrop-filter: blur(20px);
-      border-radius: 24px;
-      padding: 2rem;
-      max-width: 800px;
-      width: 100%;
-      border: 1px solid rgba(255, 255, 255, 0.8);
-      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08);
-    }
-    
-    .section-title {
-      font-family: 'Playfair Display', serif;
-      font-size: 1.75rem;
-      font-weight: 600;
-      color: #2d2d2d;
-      margin-bottom: 1.5rem;
-      padding-bottom: 0.75rem;
-      border-bottom: 1px solid rgba(0, 0, 0, 0.08);
-      position: relative;
-    }
-    
-    .section-title::after {
-      content: '';
-      position: absolute;
-      bottom: -1px;
-      left: 0;
-      width: 60px;
-      height: 2px;
-      background: linear-gradient(90deg, #ff9a9e, #fecfef);
-    }
-    
-    /* Timeline */
-    .timeline-item {
-      display: flex;
-      gap: 1rem;
-      padding: 1rem 0;
-      border-bottom: 1px solid rgba(0, 0, 0, 0.06);
-    }
-    
-    .timeline-item:last-child { border-bottom: none; }
-    
-    .timeline-date {
-      flex-shrink: 0;
-      width: 110px;
-      font-size: 0.8rem;
-      font-weight: 600;
-      color: #ff9a9e;
-      font-family: 'Cormorant Garamond', serif;
-    }
-    
-    .timeline-content h3 {
-      font-size: 1rem;
-      font-weight: 600;
-      color: #2d2d2d;
-      margin-bottom: 0.25rem;
-      font-family: 'Playfair Display', serif;
-    }
-    
-    .timeline-content .company {
-      font-size: 0.8rem;
-      color: #8b8b8b;
-      margin-bottom: 0.25rem;
-      font-style: italic;
-    }
-    
-    .timeline-content .desc {
-      font-size: 0.85rem;
-      color: #5a5a5a;
-      line-height: 1.6;
-    }
-    
-    /* Honor Cards */
-    .honor-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 0.75rem;
-    }
-    
-    .honor-card {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      padding: 1rem;
-      background: rgba(255, 255, 255, 0.5);
-      border-radius: 16px;
-      transition: all 0.3s ease;
-      border: 1px solid rgba(255, 255, 255, 0.6);
-    }
-    
-    .honor-card:active { transform: scale(0.98); }
-    
-    .honor-icon {
-      width: 40px;
-      height: 40px;
-      border-radius: 12px;
-      background: linear-gradient(135deg, #ff9a9e, #fecfef);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-    }
-    
-    .honor-icon svg { width: 20px; height: 20px; stroke: white; }
-    
-    /* Contact */
-    .contact-item {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      padding: 0.875rem 0;
-      border-bottom: 1px solid rgba(0, 0, 0, 0.06);
-    }
-    
-    .contact-item:last-child { border-bottom: none; }
-    
-    .contact-icon {
-      width: 44px;
-      height: 44px;
-      border-radius: 12px;
-      background: rgba(255, 255, 255, 0.7);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    
-    .contact-icon svg { width: 20px; height: 20px; stroke: #ff9a9e; }
-    
-    .contact-info label {
-      font-size: 0.65rem;
-      color: #a0a0a0;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      margin-bottom: 0.125rem;
-      display: block;
-    }
-    
-    .contact-info p {
-      font-size: 0.95rem;
-      font-weight: 500;
-      color: #2d2d2d;
-      font-family: 'Cormorant Garamond', serif;
-    }
-    
-    /* Info Cards */
-    .info-card {
-      padding: 1rem;
-      background: rgba(255, 255, 255, 0.5);
-      border-radius: 16px;
-      border: 1px solid rgba(255, 255, 255, 0.6);
-    }
-    
-    .info-card label {
-      font-size: 0.65rem;
-      color: #a0a0a0;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      margin-bottom: 0.25rem;
-      display: block;
-    }
-    
-    .info-card p {
-      font-size: 0.95rem;
-      font-weight: 600;
-      color: #2d2d2d;
-      font-family: 'Playfair Display', serif;
-    }
-    
-    .info-card p.sub {
-      font-size: 0.8rem;
-      font-weight: 400;
-      color: #8b8b8b;
-      margin-top: 0.125rem;
-      font-family: inherit;
-    }
-    
-    /* ===== PORTFOLIO GALLERY ===== */
-    .portfolio-container {
-      width: 100%;
-      max-width: 900px;
-    }
-    
-    .gallery-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 0.75rem;
-      margin-bottom: 1rem;
-    }
-    
-    .gallery-item {
-      aspect-ratio: 1;
-      border-radius: 16px;
-      overflow: hidden;
-      cursor: pointer;
-      position: relative;
-      background: rgba(255, 255, 255, 0.5);
-      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-      border: 2px solid rgba(255, 255, 255, 0.6);
-    }
-    
-    .gallery-item:hover, .gallery-item:active {
-      transform: scale(1.03) translateY(-5px);
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
-      border-color: #ff9a9e;
-    }
-    
-    .gallery-item img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      transition: transform 0.5s ease;
-    }
-    
-    .gallery-item:hover img, .gallery-item:active img {
-      transform: scale(1.1);
-    }
-    
-    .gallery-item .delete-btn {
-      position: absolute;
-      top: 8px;
-      right: 8px;
-      width: 28px;
-      height: 28px;
-      border-radius: 50%;
-      background: rgba(255, 255, 255, 0.9);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      opacity: 0;
-      transition: opacity 0.3s ease;
-      cursor: pointer;
-    }
-    
-    .gallery-item:hover .delete-btn, .gallery-item:active .delete-btn {
-      opacity: 1;
-    }
-    
-    .gallery-item .delete-btn svg {
-      width: 14px;
-      height: 14px;
-      stroke: #ef4444;
-    }
-    
-    /* Upload Button */
-    .upload-area {
-      aspect-ratio: 1;
-      border-radius: 16px;
-      border: 2px dashed rgba(255, 154, 158, 0.5);
       background: rgba(255, 255, 255, 0.4);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      color: #ff9a9e;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.6);
+      border-radius: 32px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.05);
+      transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
     }
-    
-    .upload-area:hover, .upload-area:active {
-      background: rgba(255, 154, 158, 0.1);
-      border-color: #ff9a9e;
-      transform: scale(1.02);
+    .glass-card:hover { transform: translateY(-5px); border-color: var(--accent-primary); }
+
+    /* 导航指示器 */
+    .indicator-active {
+      width: 24px !important;
+      border-radius: 4px !important;
+      background: #333 !important;
     }
-    
-    .upload-area svg {
-      width: 32px;
-      height: 32px;
-      margin-bottom: 0.5rem;
-    }
-    
-    .upload-area span {
-      font-size: 0.8rem;
-      font-weight: 500;
-    }
-    
-    /* Lightbox */
-    .lightbox {
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.9);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 1000;
-      opacity: 0;
-      visibility: hidden;
-      transition: all 0.3s ease;
-    }
-    
-    .lightbox.active {
-      opacity: 1;
-      visibility: visible;
-    }
-    
-    .lightbox img {
-      max-width: 90%;
-      max-height: 80vh;
-      border-radius: 16px;
-      transform: scale(0.9);
-      transition: transform 0.3s ease;
-    }
-    
-    .lightbox.active img {
-      transform: scale(1);
-    }
-    
-    .lightbox-close {
+
+    /* 视差背景球 */
+    .orb {
       position: absolute;
-      top: 20px;
-      right: 20px;
-      width: 44px;
-      height: 44px;
       border-radius: 50%;
-      background: rgba(255, 255, 255, 0.2);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      transition: background 0.3s ease;
+      filter: blur(80px);
+      z-index: -1;
+      opacity: 0.4;
     }
-    
-    .lightbox-close:hover { background: rgba(255, 255, 255, 0.3); }
-    
-    .lightbox-close svg { width: 24px; height: 24px; stroke: white; }
-    
-    .lightbox-nav {
-      position: absolute;
-      top: 50%;
-      transform: translateY(-50%);
-      width: 50px;
-      height: 50px;
-      border-radius: 50%;
-      background: rgba(255, 255, 255, 0.2);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      transition: background 0.3s ease;
-    }
-    
-    .lightbox-nav:hover { background: rgba(255, 255, 255, 0.3); }
-    
-    .lightbox-nav.prev { left: 20px; }
-    .lightbox-nav.next { right: 20px; }
-    
-    .lightbox-nav svg { width: 24px; height: 24px; stroke: white; }
-    
-    /* ===== MOBILE ===== */
+
+    /* 响应式调整 */
     @media (max-width: 768px) {
-      .horizontal-container {
-        width: 600vw;
-      }
-      
-      .page-section {
-        padding: 1rem;
-        align-items: flex-start;
-        padding-top: 4rem;
-        padding-bottom: 5rem;
-      }
-      
-      .nav-arrow {
-        width: 40px;
-        height: 40px;
-        display: none;
-      }
-      
-      .nav-arrow.left { left: 0.5rem; }
-      .nav-arrow.right { right: 0.5rem; }
-      
-      .page-indicators {
-        bottom: 1rem;
-        padding: 8px 12px;
-        gap: 8px;
-      }
-      
-      .indicator {
-        width: 6px;
-        height: 6px;
-      }
-      
-      .script-name { font-size: 2.5rem; }
-      .english-name { font-size: 1rem; letter-spacing: 0.2em; }
-      
-      .avatar-container {
-        width: 100px;
-        height: 100px;
-      }
-      
-      .glass-card {
-        padding: 1.25rem;
-        border-radius: 20px;
-      }
-      
-      .section-title {
-        font-size: 1.25rem;
-        margin-bottom: 1rem;
-      }
-      
-      .honor-grid {
-        grid-template-columns: 1fr;
-        gap: 0.5rem;
-      }
-      
-      .honor-card { padding: 0.875rem; }
-      
-      .timeline-item {
-        flex-direction: column;
-        gap: 0.5rem;
-      }
-      
-      .timeline-date { width: auto; }
-      
-      .gallery-grid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 0.5rem;
-      }
-      
-      .gallery-item, .upload-area {
-        border-radius: 12px;
-      }
-      
-      .info-card { padding: 0.875rem; }
-      
-      .contact-item { padding: 0.75rem 0; }
-    }
-    
-    @media (max-width: 380px) {
-      .script-name { font-size: 2rem; }
-      .gallery-grid { grid-template-columns: repeat(2, 1fr); }
+      .page-section { padding: 2rem 1rem; }
+      .glass-card { width: 95vw; }
     }
   </style>
 </head>
 <body>
-  <div id="app">
-    <!-- Background -->
-    <div class="gradient-bg"></div>
-    <div class="floating-orb orb-1"></div>
-    <div class="floating-orb orb-2"></div>
-    <div class="floating-orb orb-3"></div>
-    <div class="floating-orb orb-4"></div>
+  <div id="app" @wheel="handleWheel">
+    <div class="mesh-gradient"></div>
     
-    <!-- Navigation Arrows -->
-    <button 
-      class="nav-arrow left" 
-      :class="{ disabled: currentPage === 0 }"
-      @click="prevPage">
-      <i data-lucide="chevron-left" class="w-5 h-5"></i>
-    </button>
-    
-    <button 
-      class="nav-arrow right" 
-      :class="{ disabled: currentPage === totalPages - 1 }"
-      @click="nextPage">
-      <i data-lucide="chevron-right" class="w-5 h-5"></i>
-    </button>
-    
-    <!-- Page Indicators -->
-    <div class="page-indicators">
+    <div class="orb w-96 h-96 bg-pink-200 -top-20 -left-20" :style="parallaxStyle(0.1)"></div>
+    <div class="orb w-80 h-80 bg-blue-100 top-1/2 -right-20" :style="parallaxStyle(0.2)"></div>
+
+    <div class="fixed top-0 left-0 h-1 bg-gradient-to-right from-pink-300 to-purple-300 z-50 transition-all duration-300" :style="{ width: `${((currentPage + 1) / totalPages) * 100}%` }"></div>
+
+    <div class="fixed right-8 top-1/2 -translate-y-1/2 flex flex-col gap-4 z-40">
       <div 
         v-for="n in totalPages" 
         :key="n-1"
-        class="indicator"
-        :class="{ active: currentPage === n-1 }"
+        class="w-1.5 h-1.5 rounded-full bg-gray-300 cursor-pointer transition-all duration-500"
+        :class="{ 'indicator-active': currentPage === n-1 }"
         @click="goToPage(n-1)">
       </div>
     </div>
-    
-    <!-- Horizontal Container -->
-    <div class="horizontal-container" :style="containerStyle" @touchstart="handleTouchStart" @touchend="handleTouchEnd">
+
+    <div class="horizontal-container" :style="containerStyle">
       
-      <!-- Page 1: Hero -->
-      <section class="page-section" style="align-items: center;">
-        <div class="text-center">
-          <div class="flex justify-center mb-6">
-            <div class="avatar-container" @click="triggerFileInput">
-              <img v-if="avatarUrl" :src="avatarUrl" alt="头像" class="avatar-image">
-              <div v-else class="avatar-placeholder">
-                <i data-lucide="user" class="w-10 h-10 mb-1"></i>
-                <span class="text-xs">点击上传</span>
-              </div>
-              <div class="avatar-overlay">
-                <i data-lucide="camera" class="w-6 h-6"></i>
-                <span class="text-xs">更换</span>
-              </div>
-              <input ref="fileInput" type="file" accept="image/*" style="display: none;" @change="handleFileChange">
-            </div>
-          </div>
-          <h1 class="script-name">宋哲龙</h1>
-          <p class="english-name mt-2">Song Zhelong</p>
-          <p class="mt-4 text-gray-500 text-sm">机械工程研究生 · Mechanical Engineering</p>
-          <p class="mt-1 text-gray-400 text-xs">华南理工大学 · 激光增材制造 · 焊接机器人</p>
-        </div>
-      </section>
-      
-      <!-- Page 2: About -->
       <section class="page-section">
-        <div class="glass-card">
-          <h2 class="section-title">关于我 · About</h2>
-          <p class="text-gray-600 leading-relaxed mb-4 text-sm">
-            我是华南理工大学机械工程专业研究生，本科毕业于石家庄铁道大学（专业排名 2/236，保研）。
-            专注于<span class="text-pink-500 font-medium">激光增材制造</span>与<span class="text-pink-500 font-medium">焊接机器人</span>技术研究。
-          </p>
-          <div class="grid grid-cols-2 gap-3">
-            <div class="info-card">
-              <label>教育背景</label>
-              <p>华南理工大学</p>
-              <p class="sub">机械工程硕士</p>
+        <div class="text-center space-y-6">
+          <div class="relative inline-block group" @click="triggerFileInput">
+            <div class="absolute inset-0 bg-pink-200 rounded-full blur-2xl opacity-0 group-hover:opacity-40 transition-opacity duration-500"></div>
+            <div class="w-32 h-32 md:w-44 md:h-44 rounded-full border-4 border-white shadow-2xl overflow-hidden relative z-10 cursor-pointer">
+              <img v-if="avatarUrl" :src="avatarUrl" class="w-full h-full object-cover">
+              <div v-else class="w-full h-full bg-gray-50 flex items-center justify-center text-gray-400">
+                <i data-lucide="user-plus"></i>
+              </div>
             </div>
-            <div class="info-card">
-              <label>研究方向</label>
-              <p>激光增材制造</p>
-              <p class="sub">焊接机器人</p>
-            </div>
-            <div class="info-card">
-              <label>导师</label>
-              <p>王振民 教授</p>
-            </div>
-            <div class="info-card">
-              <label>学术成果</label>
-              <p>核心期刊论文</p>
-              <p class="sub">1 篇</p>
-            </div>
+            <input ref="fileInput" type="file" class="hidden" @change="handleFileChange">
+          </div>
+          
+          <div class="space-y-2">
+            <h1 class="text-6xl md:text-8xl font-script hero-text">宋哲龙</h1>
+            <p class="text-lg md:text-xl tracking-[0.4em] text-gray-400 font-light uppercase">Song Zhelong</p>
+          </div>
+
+          <div class="pt-8 flex flex-col items-center gap-3">
+             <a href="mailto:202421002662@mail.scut.edu.cn" class="group flex items-center gap-3 px-6 py-3 rounded-full bg-white/50 border border-white hover:border-pink-200 transition-all shadow-sm">
+                <i data-lucide="mail" class="w-4 h-4 text-pink-400"></i>
+                <span class="text-gray-600 font-elegant tracking-wider">202421002662@mail.scut.edu.cn</span>
+                <i data-lucide="arrow-up-right" class="w-3 h-3 opacity-0 group-hover:opacity-100 transition-all"></i>
+             </a>
+             <p class="text-xs text-gray-400 uppercase tracking-widest">SCUT · Mechanical Engineering</p>
           </div>
         </div>
       </section>
-      
-      <!-- Page 3: Experience -->
+
       <section class="page-section">
-        <div class="glass-card" style="max-height: 75vh; overflow-y: auto;">
-          <h2 class="section-title">研究经历 · Experience</h2>
-          <div class="timeline-item">
-            <div class="timeline-date">2025.10 — 2026.10</div>
-            <div class="timeline-content">
-              <h3>双臂机器人装配项目研发</h3>
-              <p class="company">美国通用汽车沃伦研发中心</p>
-              <p class="desc">参与双臂机器人装配系统的研发工作，负责机器人运动规划、协调控制算法开发。</p>
-            </div>
+        <div class="glass-card p-8 md:p-12 max-w-4xl flex flex-col md:flex-row gap-10">
+          <div class="md:w-1/3">
+             <h2 class="text-4xl font-display font-bold text-gray-800 leading-tight">关于我<br><span class="text-pink-300">About</span></h2>
+             <div class="h-1 w-12 bg-pink-200 mt-4"></div>
           </div>
-          <div class="timeline-item">
-            <div class="timeline-date">2025.02</div>
-            <div class="timeline-content">
-              <h3>学术论文发表</h3>
-              <p class="company">《机电工程技术》期刊</p>
-              <p class="desc">发表综述论文《人形机器人焊接技术研究现状与展望》，被中文核心期刊收录。</p>
-            </div>
-          </div>
-          <div class="timeline-item">
-            <div class="timeline-date">2023.02 — 2023.05</div>
-            <div class="timeline-content">
-              <h3>美国大学生数学建模竞赛</h3>
-              <p class="company">Mathematical Contest in Modeling</p>
-              <p class="desc">担任队长，获国际一等奖（Meritorious Winner）。</p>
-            </div>
-          </div>
-          <div class="timeline-item">
-            <div class="timeline-date">2022.11 — 2023.06</div>
-            <div class="timeline-content">
-              <h3>智能快递柜补货系统项目</h3>
-              <p class="company">石家庄铁道大学</p>
-              <p class="desc">负责项目结构设计、方案对比选型、模型图纸设计与修改。</p>
-            </div>
-          </div>
-        </div>
-      </section>
-      
-      <!-- Page 4: Honors -->
-      <section class="page-section">
-        <div class="glass-card">
-          <h2 class="section-title">荣誉奖项 · Honors</h2>
-          <div class="honor-grid">
-            <div class="honor-card">
-              <div class="honor-icon"><i data-lucide="award"></i></div>
-              <div>
-                <p class="font-semibold text-gray-800 text-sm">美国大学生数学建模竞赛</p>
-                <p class="text-xs text-gray-500">国际一等奖</p>
-              </div>
-            </div>
-            <div class="honor-card">
-              <div class="honor-icon"><i data-lucide="trophy"></i></div>
-              <div>
-                <p class="font-semibold text-gray-800 text-sm">全国3D数字创新设计大赛</p>
-                <p class="text-xs text-gray-500">国家二等奖</p>
-              </div>
-            </div>
-            <div class="honor-card">
-              <div class="honor-icon"><i data-lucide="medal"></i></div>
-              <div>
-                <p class="font-semibold text-gray-800 text-sm">河北省力学竞赛</p>
-                <p class="text-xs text-gray-500">省级一等奖</p>
-              </div>
-            </div>
-            <div class="honor-card">
-              <div class="honor-icon"><i data-lucide="star"></i></div>
-              <div>
-                <p class="font-semibold text-gray-800 text-sm">挑战杯学术作品竞赛</p>
-                <p class="text-xs text-gray-500">省级二等奖</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-      
-      <!-- Page 5: Portfolio (NEW) -->
-      <section class="page-section">
-        <div class="portfolio-container">
-          <div class="glass-card">
-            <h2 class="section-title">作品集 · Portfolio</h2>
-            <div class="gallery-grid">
-              <!-- Gallery Items -->
-              <div 
-                v-for="(photo, index) in portfolioPhotos" 
-                :key="index"
-                class="gallery-item"
-                @click="openLightbox(index)">
-                <img :src="photo" alt="作品">
-                <div class="delete-btn" @click.stop="deletePhoto(index)">
-                  <i data-lucide="x"></i>
-                </div>
-              </div>
-              <!-- Upload Area -->
-              <div class="upload-area" @click="triggerPortfolioUpload">
-                <i data-lucide="plus"></i>
-                <span>添加照片</span>
-              </div>
-              <input 
-                ref="portfolioInput" 
-                type="file" 
-                accept="image/*" 
-                multiple
-                style="display: none;" 
-                @change="handlePortfolioUpload">
-            </div>
-            <p class="text-center text-gray-400 text-xs mt-2">
-              点击照片查看大图 · 点击 + 添加更多照片
+          <div class="md:w-2/3 space-y-6">
+            <p class="text-lg text-gray-600 leading-relaxed font-elegant">
+              专注于<span class="underline decoration-pink-200 underline-offset-4">激光增材制造</span>与<span class="underline decoration-pink-200 underline-offset-4">焊接机器人</span>技术研究。致力于通过先进的运动规划算法提升工业制造的智能化水平。
             </p>
-          </div>
-        </div>
-      </section>
-      
-      <!-- Page 6: Contact -->
-      <section class="page-section">
-        <div class="glass-card">
-          <h2 class="section-title">联系我 · Contact</h2>
-          <div class="space-y-1">
-            <div class="contact-item">
-              <div class="contact-icon"><i data-lucide="mail"></i></div>
-              <div class="contact-info">
-                <label>Email</label>
-                <p>202421002662@mail.scut.edu.cn</p>
-              </div>
-            </div>
-            <div class="contact-item">
-              <div class="contact-icon"><i data-lucide="phone"></i></div>
-              <div class="contact-info">
-                <label>Phone</label>
-                <p>18272471376</p>
-              </div>
-            </div>
-            <div class="contact-item">
-              <div class="contact-icon"><i data-lucide="map-pin"></i></div>
-              <div class="contact-info">
-                <label>Location</label>
-                <p>湖北襄阳 · Xiangyang</p>
-              </div>
-            </div>
-            <div class="contact-item">
-              <div class="contact-icon"><i data-lucide="calendar"></i></div>
-              <div class="contact-info">
-                <label>Birth</label>
-                <p>2000年8月 · August 2000</p>
-              </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+               <div class="bg-white/30 p-4 rounded-2xl border border-white/50">
+                  <span class="text-[10px] text-gray-400 uppercase tracking-widest block mb-1">Education</span>
+                  <p class="font-display font-semibold">华南理工大学 (SCUT)</p>
+               </div>
+               <div class="bg-white/30 p-4 rounded-2xl border border-white/50">
+                  <span class="text-[10px] text-gray-400 uppercase tracking-widest block mb-1">Supervisor</span>
+                  <p class="font-display font-semibold">王振民 教授</p>
+               </div>
             </div>
           </div>
         </div>
       </section>
-      
-    </div>
-    
-    <!-- Lightbox -->
-    <div class="lightbox" :class="{ active: lightboxOpen }" @click="closeLightbox">
-      <div class="lightbox-close" @click.stop="closeLightbox">
-        <i data-lucide="x"></i>
-      </div>
-      <div class="lightbox-nav prev" @click.stop="prevImage" v-if="portfolioPhotos.length > 1">
-        <i data-lucide="chevron-left"></i>
-      </div>
-      <img v-if="lightboxOpen" :src="portfolioPhotos[lightboxIndex]" alt="大图">
-      <div class="lightbox-nav next" @click.stop="nextImage" v-if="portfolioPhotos.length > 1">
-        <i data-lucide="chevron-right"></i>
-      </div>
+
+      <section class="page-section" v-for="section in ['Experience', 'Honors', 'Portfolio', 'Contact']">
+         <div class="glass-card p-8 w-full max-w-4xl">
+            <h2 class="text-3xl font-display mb-8">{{ section }}</h2>
+            <div v-if="section === 'Contact'" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div v-for="item in contactData" class="flex items-center gap-4 p-4 bg-white/40 rounded-2xl">
+                    <div class="w-10 h-10 rounded-xl bg-pink-100 flex items-center justify-center text-pink-500">
+                        <i :data-lucide="item.icon"></i>
+                    </div>
+                    <div>
+                        <p class="text-[10px] text-gray-400 uppercase">{{ item.label }}</p>
+                        <p class="font-elegant font-bold">{{ item.value }}</p>
+                    </div>
+                </div>
+            </div>
+            <p v-else class="text-gray-400 italic font-elegant">内容正在载入中...</p>
+         </div>
+      </section>
+
     </div>
   </div>
 
   <script>
     const { createApp, ref, computed, onMounted } = Vue;
-    
     createApp({
       setup() {
         const currentPage = ref(0);
         const totalPages = 6;
-        const fileInput = ref(null);
-        const portfolioInput = ref(null);
         const avatarUrl = ref(localStorage.getItem('avatarUrl') || null);
-        
-        // Portfolio photos from localStorage
-        const portfolioPhotos = ref(JSON.parse(localStorage.getItem('portfolioPhotos') || '[]'));
-        
-        // Lightbox
-        const lightboxOpen = ref(false);
-        const lightboxIndex = ref(0);
-        
-        // Touch handling
-        let touchStartX = 0;
-        let touchStartY = 0;
-        let touchEndX = 0;
-        let isSwiping = false;
-        
+        const fileInput = ref(null);
+        let isAnimating = false;
+
         const containerStyle = computed(() => ({
-          transform: `translateX(-${currentPage.value * 100}vw)`
+          transform: `translateX(-${currentPage.value * 100}vw)`,
+          transition: 'transform 1s cubic-bezier(0.23, 1, 0.32, 1)'
         }));
-        
-        // Navigation
-        const nextPage = () => {
-          if (currentPage.value < totalPages - 1) {
-            currentPage.value++;
+
+        const parallaxStyle = (speed) => ({
+          transform: `translateX(${currentPage.value * 100 * speed}px)`,
+          transition: 'transform 1.2s cubic-bezier(0.23, 1, 0.32, 1)'
+        });
+
+        // 核心交互：滚轮翻页
+        const handleWheel = (e) => {
+          if (isAnimating) return;
+          if (Math.abs(e.deltaY) < 30) return; // 忽略微小滚动
+
+          if (e.deltaY > 0 && currentPage.value < totalPages - 1) {
+            navigate(1);
+          } else if (e.deltaY < 0 && currentPage.value > 0) {
+            navigate(-1);
           }
         };
-        
-        const prevPage = () => {
-          if (currentPage.value > 0) {
-            currentPage.value--;
-          }
+
+        const navigate = (direction) => {
+          isAnimating = true;
+          currentPage.value += direction;
+          setTimeout(() => { isAnimating = false; }, 1000);
         };
-        
-        const goToPage = (page) => {
-          currentPage.value = page;
+
+        const goToPage = (index) => {
+          currentPage.value = index;
         };
-        
-        // Keyboard navigation
-        const handleKeydown = (e) => {
-          if (lightboxOpen.value) {
-            if (e.key === 'Escape') closeLightbox();
-            if (e.key === 'ArrowLeft') prevImage();
-            if (e.key === 'ArrowRight') nextImage();
-            return;
-          }
-          if (e.key === 'ArrowRight' || e.key === ' ') {
-            e.preventDefault();
-            nextPage();
-          } else if (e.key === 'ArrowLeft') {
-            e.preventDefault();
-            prevPage();
-          }
-        };
-        
-        // Touch swipe
-        const handleTouchStart = (e) => {
-          touchStartX = e.changedTouches[0].screenX;
-          touchStartY = e.changedTouches[0].screenY;
-          isSwiping = false;
-        };
-        
-        const handleTouchEnd = (e) => {
-          touchEndX = e.changedTouches[0].screenX;
-          const touchEndY = e.changedTouches[0].screenY;
-          
-          const diffX = touchStartX - touchEndX;
-          const diffY = touchStartY - touchEndY;
-          
-          // Only handle horizontal swipes
-          if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 50) {
-            e.preventDefault();
-            if (diffX > 0) {
-              nextPage();
-            } else {
-              prevPage();
-            }
-          }
-        };
-        
-        // Avatar upload
-        const triggerFileInput = () => {
-          fileInput.value.click();
-        };
-        
+
+        const triggerFileInput = () => fileInput.value.click();
         const handleFileChange = (e) => {
           const file = e.target.files[0];
           if (file) {
             const reader = new FileReader();
-            reader.onload = (event) => {
-              avatarUrl.value = event.target.result;
-              localStorage.setItem('avatarUrl', event.target.result);
+            reader.onload = (ev) => {
+              avatarUrl.value = ev.target.result;
+              localStorage.setItem('avatarUrl', ev.target.result);
             };
             reader.readAsDataURL(file);
           }
         };
-        
-        // Portfolio upload
-        const triggerPortfolioUpload = () => {
-          portfolioInput.value.click();
-        };
-        
-        const handlePortfolioUpload = (e) => {
-          const files = Array.from(e.target.files);
-          files.forEach(file => {
-            const reader = new FileReader();
-            reader.onload = (event) => {
-              portfolioPhotos.value.push(event.target.result);
-              localStorage.setItem('portfolioPhotos', JSON.stringify(portfolioPhotos.value));
-            };
-            reader.readAsDataURL(file);
-          });
-        };
-        
-        const deletePhoto = (index) => {
-          portfolioPhotos.value.splice(index, 1);
-          localStorage.setItem('portfolioPhotos', JSON.stringify(portfolioPhotos.value));
-        };
-        
-        // Lightbox
-        const openLightbox = (index) => {
-          lightboxIndex.value = index;
-          lightboxOpen.value = true;
-          document.body.style.overflow = 'hidden';
-        };
-        
-        const closeLightbox = () => {
-          lightboxOpen.value = false;
-          document.body.style.overflow = '';
-        };
-        
-        const prevImage = () => {
-          if (lightboxIndex.value > 0) {
-            lightboxIndex.value--;
-          } else {
-            lightboxIndex.value = portfolioPhotos.value.length - 1;
-          }
-        };
-        
-        const nextImage = () => {
-          if (lightboxIndex.value < portfolioPhotos.value.length - 1) {
-            lightboxIndex.value++;
-          } else {
-            lightboxIndex.value = 0;
-          }
-        };
-        
+
+        const contactData = [
+            { label: 'Email', value: '202421002662@mail.scut.edu.cn', icon: 'mail' },
+            { label: 'Phone', value: '18272471376', icon: 'phone' },
+            { label: 'Location', value: '湖北襄阳 · Xiangyang', icon: 'map-pin' },
+            { label: 'Birth', value: '2000年8月', icon: 'calendar' }
+        ];
+
         onMounted(() => {
           lucide.createIcons();
-          window.addEventListener('keydown', handleKeydown);
-          
-          // Initial animation
-          gsap.from('.script-name', {
-            opacity: 0,
-            y: 30,
-            duration: 1,
-            delay: 0.3,
-            ease: 'power3.out'
-          });
-          
-          gsap.from('.avatar-container', {
-            opacity: 0,
-            scale: 0.8,
-            duration: 0.8,
-            delay: 0.2,
-            ease: 'back.out(1.7)'
-          });
         });
-        
-        return {
-          currentPage,
-          totalPages,
-          containerStyle,
-          fileInput,
-          portfolioInput,
-          avatarUrl,
-          portfolioPhotos,
-          lightboxOpen,
-          lightboxIndex,
-          nextPage,
-          prevPage,
-          goToPage,
-          handleTouchStart,
-          handleTouchEnd,
-          triggerFileInput,
-          handleFileChange,
-          triggerPortfolioUpload,
-          handlePortfolioUpload,
-          deletePhoto,
-          openLightbox,
-          closeLightbox,
-          prevImage,
-          nextImage
+
+        return { 
+          currentPage, totalPages, containerStyle, parallaxStyle,
+          handleWheel, goToPage, avatarUrl, fileInput, triggerFileInput, 
+          handleFileChange, contactData
         };
       }
     }).mount('#app');
