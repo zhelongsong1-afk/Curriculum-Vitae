@@ -1,0 +1,1043 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>宋哲龙 - Song Zhelong</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Vue 3 -->
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+  
+  <!-- GSAP -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  
+  <!-- Google Fonts - Script/Cursive -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Great+Vibes&family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            'script': ['"Great Vibes"', 'cursive'],
+            'display': ['"Playfair Display"', 'serif'],
+            'elegant': ['"Cormorant Garamond"', 'serif'],
+          },
+        }
+      }
+    }
+  </script>
+  
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    html, body {
+      font-family: 'Inter', system-ui, sans-serif;
+      overflow: hidden;
+      height: 100%;
+      width: 100%;
+    }
+    
+    /* Animated Gradient Background */
+    .gradient-bg {
+      position: fixed;
+      inset: 0;
+      background: 
+        radial-gradient(ellipse at 20% 30%, rgba(255, 182, 193, 0.6) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 20%, rgba(173, 216, 230, 0.5) 0%, transparent 45%),
+        radial-gradient(ellipse at 40% 80%, rgba(255, 218, 185, 0.5) 0%, transparent 50%),
+        radial-gradient(ellipse at 70% 70%, rgba(221, 160, 221, 0.4) 0%, transparent 45%),
+        radial-gradient(ellipse at 10% 60%, rgba(255, 160, 122, 0.4) 0%, transparent 40%),
+        linear-gradient(135deg, #fef9f6 0%, #fff5f5 25%, #f0f8ff 50%, #faf5ff 75%, #fff8f0 100%);
+      animation: gradientMove 20s ease-in-out infinite;
+      z-index: -1;
+    }
+    
+    @keyframes gradientMove {
+      0%, 100% {
+        background-position: 0% 50%;
+      }
+      50% {
+        background-position: 100% 50%;
+      }
+    }
+    
+    /* Floating Orbs */
+    .floating-orb {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(60px);
+      opacity: 0.5;
+      animation: float 15s ease-in-out infinite;
+      pointer-events: none;
+    }
+    
+    .orb-1 {
+      width: 400px;
+      height: 400px;
+      background: linear-gradient(135deg, #ffb6c1, #ffc0cb);
+      top: -100px;
+      left: -100px;
+      animation-delay: 0s;
+    }
+    
+    .orb-2 {
+      width: 350px;
+      height: 350px;
+      background: linear-gradient(135deg, #add8e6, #e6e6fa);
+      top: 20%;
+      right: -80px;
+      animation-delay: -5s;
+    }
+    
+    .orb-3 {
+      width: 300px;
+      height: 300px;
+      background: linear-gradient(135deg, #ffdab9, #ffe4b5);
+      bottom: 10%;
+      left: 10%;
+      animation-delay: -10s;
+    }
+    
+    .orb-4 {
+      width: 250px;
+      height: 250px;
+      background: linear-gradient(135deg, #dda0dd, #e6e6fa);
+      bottom: 20%;
+      right: 15%;
+      animation-delay: -7s;
+    }
+    
+    @keyframes float {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      25% { transform: translate(30px, -30px) scale(1.05); }
+      50% { transform: translate(-20px, 20px) scale(0.95); }
+      75% { transform: translate(20px, 30px) scale(1.02); }
+    }
+    
+    /* Horizontal Scroll Container */
+    .horizontal-container {
+      display: flex;
+      width: 500vw;
+      height: 100vh;
+      transition: transform 0.9s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    .page-section {
+      width: 100vw;
+      height: 100vh;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 3rem;
+      position: relative;
+    }
+    
+    /* Navigation Arrows - Elegant Style */
+    .nav-arrow {
+      position: fixed;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.7);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      z-index: 100;
+      box-shadow: 
+        0 8px 32px rgba(0, 0, 0, 0.08),
+        inset 0 1px 0 rgba(255, 255, 255, 0.6);
+    }
+    
+    .nav-arrow:hover {
+      background: rgba(255, 255, 255, 0.95);
+      transform: translateY(-50%) scale(1.1);
+      box-shadow: 
+        0 12px 40px rgba(0, 0, 0, 0.12),
+        inset 0 1px 0 rgba(255, 255, 255, 0.8);
+    }
+    
+    .nav-arrow svg {
+      stroke: #4a4a4a;
+      transition: stroke 0.3s ease;
+    }
+    
+    .nav-arrow.left {
+      left: 2.5rem;
+    }
+    
+    .nav-arrow.right {
+      right: 2.5rem;
+    }
+    
+    .nav-arrow.disabled {
+      opacity: 0.3;
+      pointer-events: none;
+    }
+    
+    /* Page Indicators */
+    .page-indicators {
+      position: fixed;
+      bottom: 2.5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 14px;
+      z-index: 100;
+      padding: 12px 20px;
+      background: rgba(255, 255, 255, 0.5);
+      backdrop-filter: blur(10px);
+      border-radius: 100px;
+      border: 1px solid rgba(255, 255, 255, 0.6);
+    }
+    
+    .indicator {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: rgba(0, 0, 0, 0.15);
+      cursor: pointer;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    .indicator.active {
+      background: linear-gradient(135deg, #ff9a9e, #fecfef);
+      transform: scale(1.4);
+      box-shadow: 0 2px 8px rgba(255, 154, 158, 0.4);
+    }
+    
+    /* Script Name Style */
+    .script-name {
+      font-family: 'Great Vibes', cursive;
+      font-size: 5rem;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #f5576c 75%, #667eea 100%);
+      background-size: 200% auto;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: gradientFlow 4s ease infinite;
+      text-shadow: none;
+      filter: drop-shadow(0 4px 20px rgba(102, 126, 234, 0.3));
+    }
+    
+    @keyframes gradientFlow {
+      0% { background-position: 0% center; }
+      50% { background-position: 100% center; }
+      100% { background-position: 0% center; }
+    }
+    
+    .english-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.5rem;
+      font-weight: 400;
+      letter-spacing: 0.4em;
+      color: #8b8b8b;
+      text-transform: uppercase;
+      margin-top: 0.5rem;
+    }
+    
+    /* Avatar Upload - Elegant */
+    .avatar-container {
+      position: relative;
+      width: 170px;
+      height: 170px;
+      border-radius: 50%;
+      overflow: hidden;
+      cursor: pointer;
+      transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+      border: 3px solid rgba(255, 255, 255, 0.8);
+      box-shadow: 
+        0 20px 60px rgba(0, 0, 0, 0.1),
+        0 0 0 1px rgba(255, 255, 255, 0.5),
+        inset 0 0 30px rgba(255, 255, 255, 0.5);
+    }
+    
+    .avatar-container:hover {
+      transform: scale(1.05);
+      box-shadow: 
+        0 30px 80px rgba(0, 0, 0, 0.15),
+        0 0 0 2px rgba(255, 154, 158, 0.5),
+        inset 0 0 30px rgba(255, 255, 255, 0.6);
+    }
+    
+    .avatar-container:hover .avatar-overlay {
+      opacity: 1;
+    }
+    
+    .avatar-image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    
+    .avatar-placeholder {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, rgba(255,255,255,0.9), rgba(255,255,255,0.7));
+      color: #a0a0a0;
+    }
+    
+    .avatar-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(255, 154, 158, 0.9), rgba(254, 207, 239, 0.9));
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: opacity 0.4s ease;
+      color: white;
+    }
+    
+    .avatar-overlay svg {
+      width: 32px;
+      height: 32px;
+      margin-bottom: 8px;
+      stroke: white;
+    }
+    
+    .avatar-overlay span {
+      font-size: 14px;
+      font-weight: 500;
+    }
+    
+    /* Glass Card - Premium */
+    .glass-card {
+      background: rgba(255, 255, 255, 0.65);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-radius: 32px;
+      padding: 3.5rem;
+      max-width: 850px;
+      width: 100%;
+      border: 1px solid rgba(255, 255, 255, 0.8);
+      box-shadow: 
+        0 25px 80px rgba(0, 0, 0, 0.08),
+        inset 0 1px 0 rgba(255, 255, 255, 0.9);
+      transition: all 0.5s ease;
+    }
+    
+    .glass-card:hover {
+      box-shadow: 
+        0 35px 100px rgba(0, 0, 0, 0.12),
+        inset 0 1px 0 rgba(255, 255, 255, 0.95);
+    }
+    
+    .section-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 2.25rem;
+      font-weight: 600;
+      color: #2d2d2d;
+      margin-bottom: 2.5rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+      position: relative;
+    }
+    
+    .section-title::after {
+      content: '';
+      position: absolute;
+      bottom: -1px;
+      left: 0;
+      width: 80px;
+      height: 2px;
+      background: linear-gradient(90deg, #ff9a9e, #fecfef);
+      border-radius: 2px;
+    }
+    
+    /* Timeline - Elegant */
+    .timeline-item {
+      display: flex;
+      gap: 2rem;
+      padding: 1.75rem 0;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+      transition: all 0.3s ease;
+    }
+    
+    .timeline-item:hover {
+      background: rgba(255, 255, 255, 0.4);
+      margin: 0 -1rem;
+      padding-left: 1rem;
+      padding-right: 1rem;
+      border-radius: 16px;
+    }
+    
+    .timeline-item:last-child {
+      border-bottom: none;
+    }
+    
+    .timeline-date {
+      flex-shrink: 0;
+      width: 130px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: #ff9a9e;
+      font-family: 'Cormorant Garamond', serif;
+      letter-spacing: 0.05em;
+    }
+    
+    .timeline-content h3 {
+      font-size: 1.125rem;
+      font-weight: 600;
+      color: #2d2d2d;
+      margin-bottom: 0.25rem;
+      font-family: 'Playfair Display', serif;
+    }
+    
+    .timeline-content .company {
+      font-size: 0.875rem;
+      color: #8b8b8b;
+      margin-bottom: 0.5rem;
+      font-style: italic;
+    }
+    
+    .timeline-content .desc {
+      font-size: 0.9rem;
+      color: #5a5a5a;
+      line-height: 1.7;
+    }
+    
+    /* Honor Cards - Premium */
+    .honor-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.25rem;
+    }
+    
+    .honor-card {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      padding: 1.5rem;
+      background: rgba(255, 255, 255, 0.5);
+      border-radius: 20px;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      border: 1px solid rgba(255, 255, 255, 0.6);
+    }
+    
+    .honor-card:hover {
+      background: rgba(255, 255, 255, 0.8);
+      transform: translateY(-4px);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+    }
+    
+    .honor-icon {
+      width: 50px;
+      height: 50px;
+      border-radius: 16px;
+      background: linear-gradient(135deg, #ff9a9e, #fecfef);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      box-shadow: 0 8px 20px rgba(255, 154, 158, 0.3);
+    }
+    
+    .honor-icon svg {
+      width: 24px;
+      height: 24px;
+      stroke: white;
+    }
+    
+    /* Skills - Elegant Tags */
+    .skill-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.875rem;
+    }
+    
+    .skill-tag {
+      padding: 0.75rem 1.5rem;
+      background: rgba(255, 255, 255, 0.6);
+      border-radius: 100px;
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: #5a5a5a;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      border: 1px solid rgba(255, 255, 255, 0.8);
+      cursor: pointer;
+    }
+    
+    .skill-tag:hover {
+      background: linear-gradient(135deg, #ff9a9e, #fecfef);
+      color: white;
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px rgba(255, 154, 158, 0.3);
+      border-color: transparent;
+    }
+    
+    /* Contact - Elegant */
+    .contact-item {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      padding: 1.25rem 0;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+      transition: all 0.3s ease;
+    }
+    
+    .contact-item:hover {
+      padding-left: 0.5rem;
+    }
+    
+    .contact-item:last-child {
+      border-bottom: none;
+    }
+    
+    .contact-icon {
+      width: 52px;
+      height: 52px;
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+    }
+    
+    .contact-item:hover .contact-icon {
+      background: linear-gradient(135deg, #ff9a9e, #fecfef);
+    }
+    
+    .contact-icon svg {
+      width: 22px;
+      height: 22px;
+      stroke: #ff9a9e;
+      transition: stroke 0.3s ease;
+    }
+    
+    .contact-item:hover .contact-icon svg {
+      stroke: white;
+    }
+    
+    .contact-info label {
+      font-size: 0.7rem;
+      color: #a0a0a0;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      margin-bottom: 0.25rem;
+      display: block;
+    }
+    
+    .contact-info p {
+      font-size: 1.05rem;
+      font-weight: 500;
+      color: #2d2d2d;
+      font-family: 'Cormorant Garamond', serif;
+    }
+    
+    /* Info Cards */
+    .info-card {
+      padding: 1.5rem;
+      background: rgba(255, 255, 255, 0.5);
+      border-radius: 20px;
+      transition: all 0.4s ease;
+      border: 1px solid rgba(255, 255, 255, 0.6);
+    }
+    
+    .info-card:hover {
+      background: rgba(255, 255, 255, 0.8);
+      transform: translateY(-3px);
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.06);
+    }
+    
+    .info-card label {
+      font-size: 0.7rem;
+      color: #a0a0a0;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 0.5rem;
+      display: block;
+    }
+    
+    .info-card p {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #2d2d2d;
+      font-family: 'Playfair Display', serif;
+    }
+    
+    .info-card p.sub {
+      font-size: 0.875rem;
+      font-weight: 400;
+      color: #8b8b8b;
+      margin-top: 0.25rem;
+      font-family: inherit;
+    }
+    
+    /* Mobile */
+    @media (max-width: 768px) {
+      .horizontal-container {
+        flex-direction: column;
+        width: 100vw;
+        height: auto;
+        overflow-y: auto;
+        scroll-snap-type: y mandatory;
+      }
+      
+      .page-section {
+        width: 100vw;
+        height: 100vh;
+        scroll-snap-align: start;
+        padding: 1.5rem;
+      }
+      
+      .nav-arrow {
+        display: none;
+      }
+      
+      .script-name {
+        font-size: 3.5rem;
+      }
+      
+      .english-name {
+        font-size: 1.125rem;
+      }
+      
+      .glass-card {
+        padding: 2rem;
+        border-radius: 24px;
+      }
+      
+      .section-title {
+        font-size: 1.75rem;
+      }
+      
+      .honor-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .timeline-item {
+        flex-direction: column;
+        gap: 0.75rem;
+      }
+      
+      .timeline-date {
+        width: auto;
+      }
+      
+      .page-indicators {
+        bottom: 1.5rem;
+        padding: 10px 16px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <!-- Animated Background -->
+    <div class="gradient-bg"></div>
+    <div class="floating-orb orb-1"></div>
+    <div class="floating-orb orb-2"></div>
+    <div class="floating-orb orb-3"></div>
+    <div class="floating-orb orb-4"></div>
+    
+    <!-- Navigation Arrows -->
+    <button 
+      class="nav-arrow left" 
+      :class="{ disabled: currentPage === 0 }"
+      @click="prevPage"
+      v-if="!isMobile">
+      <i data-lucide="chevron-left" class="w-6 h-6"></i>
+    </button>
+    
+    <button 
+      class="nav-arrow right" 
+      :class="{ disabled: currentPage === totalPages - 1 }"
+      @click="nextPage"
+      v-if="!isMobile">
+      <i data-lucide="chevron-right" class="w-6 h-6"></i>
+    </button>
+    
+    <!-- Page Indicators -->
+    <div class="page-indicators">
+      <div 
+        v-for="n in totalPages" 
+        :key="n-1"
+        class="indicator"
+        :class="{ active: currentPage === n-1 }"
+        @click="goToPage(n-1)">
+      </div>
+    </div>
+    
+    <!-- Horizontal Container -->
+    <div class="horizontal-container" :style="containerStyle">
+      
+      <!-- Page 1: Hero -->
+      <section class="page-section">
+        <div class="text-center">
+          <!-- Avatar Upload -->
+          <div class="flex justify-center mb-10">
+            <div class="avatar-container" @click="triggerFileInput">
+              <img 
+                v-if="avatarUrl" 
+                :src="avatarUrl" 
+                alt="头像" 
+                class="avatar-image">
+              <div v-else class="avatar-placeholder">
+                <i data-lucide="user" class="w-14 h-14 mb-2"></i>
+                <span class="text-sm">点击上传头像</span>
+              </div>
+              <div class="avatar-overlay">
+                <i data-lucide="camera" class="w-8 h-8"></i>
+                <span>更换头像</span>
+              </div>
+              <input 
+                ref="fileInput"
+                type="file" 
+                accept="image/*" 
+                style="display: none;"
+                @change="handleFileChange">
+            </div>
+          </div>
+          
+          <!-- Script Name -->
+          <h1 class="script-name">宋哲龙</h1>
+          <p class="english-name">Song Zhelong</p>
+          <p class="mt-8 text-gray-500 text-lg">机械工程研究生 · Mechanical Engineering</p>
+          <p class="mt-2 text-gray-400">华南理工大学 · 激光增材制造 · 焊接机器人</p>
+        </div>
+      </section>
+      
+      <!-- Page 2: About -->
+      <section class="page-section">
+        <div class="glass-card">
+          <h2 class="section-title">关于我 · About</h2>
+          <p class="text-gray-600 leading-relaxed mb-8 text-lg">
+            我是华南理工大学机械工程专业研究生，本科毕业于石家庄铁道大学（专业排名 2/236，保研）。
+            专注于<span class="text-pink-500 font-medium">激光增材制造</span>与<span class="text-pink-500 font-medium">焊接机器人</span>技术研究，致力于推动智能制造领域创新发展。
+          </p>
+          <div class="grid grid-cols-2 gap-5">
+            <div class="info-card">
+              <label>教育背景 · Education</label>
+              <p>华南理工大学</p>
+              <p class="sub">机械工程硕士</p>
+            </div>
+            <div class="info-card">
+              <label>研究方向 · Research</label>
+              <p>激光增材制造</p>
+              <p class="sub">焊接机器人</p>
+            </div>
+            <div class="info-card">
+              <label>导师 · Supervisor</label>
+              <p>王振民 教授</p>
+            </div>
+            <div class="info-card">
+              <label>学术成果 · Publication</label>
+              <p>核心期刊论文</p>
+              <p class="sub">1 篇</p>
+            </div>
+          </div>
+        </div>
+      </section>
+      
+      <!-- Page 3: Experience -->
+      <section class="page-section">
+        <div class="glass-card" style="max-height: 80vh; overflow-y: auto;">
+          <h2 class="section-title">研究经历 · Experience</h2>
+          <div class="timeline-item">
+            <div class="timeline-date">2025.10 — 2026.10</div>
+            <div class="timeline-content">
+              <h3>双臂机器人装配项目研发</h3>
+              <p class="company">美国通用汽车沃伦研发中心 · General Motors Warren Tech Center</p>
+              <p class="desc">参与双臂机器人装配系统的研发工作，负责机器人运动规划、协调控制算法开发，以及装配工艺优化研究。</p>
+            </div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-date">2025.02</div>
+            <div class="timeline-content">
+              <h3>学术论文发表</h3>
+              <p class="company">《机电工程技术》期刊 · Journal of Mechanical & Electrical Engineering</p>
+              <p class="desc">发表综述论文《人形机器人焊接技术研究现状与展望》，被中文核心期刊收录。</p>
+            </div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-date">2023.02 — 2023.05</div>
+            <div class="timeline-content">
+              <h3>美国大学生数学建模竞赛</h3>
+              <p class="company">Mathematical Contest in Modeling (MCM)</p>
+              <p class="desc">担任队长，负责数学模型建立、MATLAB和Python编程求解，获国际一等奖（Meritorious Winner）。</p>
+            </div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-date">2022.11 — 2023.06</div>
+            <div class="timeline-content">
+              <h3>智能快递柜补货系统项目</h3>
+              <p class="company">石家庄铁道大学 · Shijiazhuang Tiedao University</p>
+              <p class="desc">负责项目结构设计、方案对比选型、模型图纸设计与修改工作。</p>
+            </div>
+          </div>
+        </div>
+      </section>
+      
+      <!-- Page 4: Honors -->
+      <section class="page-section">
+        <div class="glass-card">
+          <h2 class="section-title">荣誉奖项 · Honors</h2>
+          <div class="honor-grid">
+            <div class="honor-card">
+              <div class="honor-icon">
+                <i data-lucide="award"></i>
+              </div>
+              <div>
+                <p class="font-semibold text-gray-800">美国大学生数学建模竞赛</p>
+                <p class="text-sm text-gray-500">国际一等奖 · Meritorious Winner</p>
+              </div>
+            </div>
+            <div class="honor-card">
+              <div class="honor-icon">
+                <i data-lucide="trophy"></i>
+              </div>
+              <div>
+                <p class="font-semibold text-gray-800">全国3D数字创新设计大赛</p>
+                <p class="text-sm text-gray-500">国家二等奖 · National Second Prize</p>
+              </div>
+            </div>
+            <div class="honor-card">
+              <div class="honor-icon">
+                <i data-lucide="medal"></i>
+              </div>
+              <div>
+                <p class="font-semibold text-gray-800">河北省力学竞赛</p>
+                <p class="text-sm text-gray-500">省级一等奖 · Provincial First Prize</p>
+              </div>
+            </div>
+            <div class="honor-card">
+              <div class="honor-icon">
+                <i data-lucide="star"></i>
+              </div>
+              <div>
+                <p class="font-semibold text-gray-800">挑战杯学术作品竞赛</p>
+                <p class="text-sm text-gray-500">省级二等奖 · Provincial Second Prize</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      
+      <!-- Page 5: Contact -->
+      <section class="page-section">
+        <div class="glass-card">
+          <h2 class="section-title">联系我 · Contact</h2>
+          <div class="space-y-2">
+            <div class="contact-item">
+              <div class="contact-icon">
+                <i data-lucide="mail"></i>
+              </div>
+              <div class="contact-info">
+                <label>Email</label>
+                <p>202421002662@mail.scut.edu.cn</p>
+              </div>
+            </div>
+            <div class="contact-item">
+              <div class="contact-icon">
+                <i data-lucide="phone"></i>
+              </div>
+              <div class="contact-info">
+                <label>Phone</label>
+                <p>18272471376</p>
+              </div>
+            </div>
+            <div class="contact-item">
+              <div class="contact-icon">
+                <i data-lucide="map-pin"></i>
+              </div>
+              <div class="contact-info">
+                <label>Location</label>
+                <p>湖北襄阳 · Xiangyang, Hubei</p>
+              </div>
+            </div>
+            <div class="contact-item">
+              <div class="contact-icon">
+                <i data-lucide="calendar"></i>
+              </div>
+              <div class="contact-info">
+                <label>Birth</label>
+                <p>2000年8月 · August 2000</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      
+    </div>
+  </div>
+
+  <script>
+    const { createApp, ref, computed, onMounted, onUnmounted } = Vue;
+    
+    createApp({
+      setup() {
+        const currentPage = ref(0);
+        const totalPages = 5;
+        const fileInput = ref(null);
+        const avatarUrl = ref(null);
+        const isMobile = ref(false);
+        
+        // Check if mobile
+        const checkMobile = () => {
+          isMobile.value = window.innerWidth <= 768;
+        };
+        
+        // Container transform style
+        const containerStyle = computed(() => {
+          if (isMobile.value) return {};
+          return {
+            transform: `translateX(-${currentPage.value * 100}vw)`
+          };
+        });
+        
+        // Navigation
+        const nextPage = () => {
+          if (currentPage.value < totalPages - 1) {
+            currentPage.value++;
+          }
+        };
+        
+        const prevPage = () => {
+          if (currentPage.value > 0) {
+            currentPage.value--;
+          }
+        };
+        
+        const goToPage = (page) => {
+          currentPage.value = page;
+        };
+        
+        // Keyboard navigation
+        const handleKeydown = (e) => {
+          if (e.key === 'ArrowRight' || e.key === ' ') {
+            nextPage();
+          } else if (e.key === 'ArrowLeft') {
+            prevPage();
+          }
+        };
+        
+        // Avatar upload
+        const triggerFileInput = () => {
+          fileInput.value.click();
+        };
+        
+        const handleFileChange = (e) => {
+          const file = e.target.files[0];
+          if (file) {
+            const reader = new FileReader();
+            reader.onload = (event) => {
+              avatarUrl.value = event.target.result;
+            };
+            reader.readAsDataURL(file);
+          }
+        };
+        
+        // Touch swipe for mobile
+        let touchStartX = 0;
+        let touchEndX = 0;
+        
+        const handleTouchStart = (e) => {
+          touchStartX = e.changedTouches[0].screenX;
+        };
+        
+        const handleTouchEnd = (e) => {
+          touchEndX = e.changedTouches[0].screenX;
+          handleSwipe();
+        };
+        
+        const handleSwipe = () => {
+          const swipeThreshold = 50;
+          const diff = touchStartX - touchEndX;
+          
+          if (Math.abs(diff) > swipeThreshold) {
+            if (diff > 0) {
+              nextPage();
+            } else {
+              prevPage();
+            }
+          }
+        };
+        
+        onMounted(() => {
+          lucide.createIcons();
+          checkMobile();
+          
+          window.addEventListener('resize', checkMobile);
+          window.addEventListener('keydown', handleKeydown);
+          
+          // Touch events for mobile swipe
+          document.addEventListener('touchstart', handleTouchStart);
+          document.addEventListener('touchend', handleTouchEnd);
+          
+          // Initial animation
+          gsap.from('.script-name', {
+            opacity: 0,
+            y: 40,
+            duration: 1.2,
+            delay: 0.3,
+            ease: 'power3.out'
+          });
+          
+          gsap.from('.english-name', {
+            opacity: 0,
+            y: 20,
+            duration: 1,
+            delay: 0.6,
+            ease: 'power3.out'
+          });
+          
+          gsap.from('.avatar-container', {
+            opacity: 0,
+            scale: 0.8,
+            duration: 1,
+            delay: 0.2,
+            ease: 'back.out(1.7)'
+          });
+        });
+        
+        onUnmounted(() => {
+          window.removeEventListener('resize', checkMobile);
+          window.removeEventListener('keydown', handleKeydown);
+          document.removeEventListener('touchstart', handleTouchStart);
+          document.removeEventListener('touchend', handleTouchEnd);
+        });
+        
+        return {
+          currentPage,
+          totalPages,
+          containerStyle,
+          fileInput,
+          avatarUrl,
+          isMobile,
+          nextPage,
+          prevPage,
+          goToPage,
+          triggerFileInput,
+          handleFileChange
+        };
+      }
+    }).mount('#app');
+  </script>
+</body>
+</html>
