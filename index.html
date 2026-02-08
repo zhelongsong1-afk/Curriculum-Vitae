@@ -1,1415 +1,1176 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html lang="zh-CN">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Zhelong Song - Mechanical Engineering Researcher</title>
-  
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+  <title>宋哲龙 - Song Zhelong</title>
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
   <!-- Vue 3 -->
-  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
-  
-  <!-- GSAP -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
-  
-  <!-- Three.js -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-  
+  <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+
+  <!-- GSAP + ScrollTrigger -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- Fonts (keep your original taste, but used subtly) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Playfair+Display:wght@400;600&family=Cormorant+Garamond:wght@400;600&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            script: ['"Great Vibes"', 'cursive'],
+            display: ['"Playfair Display"', 'serif'],
+            elegant: ['"Cormorant Garamond"', 'serif'],
+            ui: ['ui-sans-serif','system-ui','Inter','Segoe UI','PingFang SC','Microsoft YaHei','sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
-    
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
+    :root{
+      --bg:#050505;
+      --fg:#F0F0F0;
+      --muted: rgba(240,240,240,.68);
+      --muted2: rgba(240,240,240,.46);
+      --accent:#CCFF00;
+      --glass: rgba(255,255,255,.06);
+      --border: rgba(255,255,255,.12);
+      --border2: rgba(255,255,255,.18);
+      --shadow: 0 26px 90px rgba(0,0,0,.55);
     }
-    
-    body {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-      background: #000000;
-      color: #ffffff;
-      overflow-x: hidden;
-      line-height: 1.6;
-    }
-
-    /* Hero Section */
-    .hero-container {
-      position: relative;
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      overflow: hidden;
-      background: radial-gradient(ellipse at center, #0a0a0a 0%, #000000 100%);
-      padding-top: 88px;
+    *{ box-sizing:border-box; }
+    html,body{ height:100%; }
+    body{
+      margin:0;
+      background: var(--bg);
+      color: var(--fg);
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Inter, PingFang SC, Microsoft YaHei, sans-serif;
+      overflow-x:hidden;
+      cursor:none;
     }
 
-    /* 3D Canvas Background */
-    #canvas-3d {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      z-index: 1;
+    /* ===== Liquid void background ===== */
+    #voidCanvas{
+      position:fixed; inset:0;
+      width:100%; height:100%;
+      z-index:-3;
+      filter: blur(18px) saturate(1.15) contrast(1.05);
+      opacity: .95;
+    }
+    .grid-overlay{
+      pointer-events:none;
+      position:fixed; inset:0;
+      z-index:-2;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.06) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.06) 1px, transparent 1px);
+      background-size: 58px 58px;
+      opacity:.07;
+      mask-image: radial-gradient(closest-side, rgba(0,0,0,0.0), rgba(0,0,0,1));
+      -webkit-mask-image: radial-gradient(closest-side, rgba(0,0,0,0.0), rgba(0,0,0,1));
+    }
+    .noise{
+      pointer-events:none;
+      position:fixed; inset:0;
+      z-index:-1;
+      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='240' height='240' filter='url(%23n)' opacity='.25'/%3E%3C/svg%3E");
+      mix-blend-mode:overlay;
+      opacity:.10;
     }
 
-    /* Hero Content */
-    .hero-content {
-      position: relative;
-      z-index: 10;
-      max-width: 1400px;
-      margin: 0 auto;
-      padding: 0 60px;
-      width: 100%;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 80px;
-      align-items: center;
+    /* ===== Glass system ===== */
+    .glass{
+      background: linear-gradient(180deg, rgba(255,255,255,0.085), rgba(255,255,255,0.035));
+      border: 1px solid var(--border);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      box-shadow: var(--shadow);
+    }
+    .glass-lite{
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.10);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+    }
+    .hairline{
+      height:1px; width:100%;
+      background: linear-gradient(90deg, rgba(255,255,255,0), rgba(255,255,255,.22), rgba(255,255,255,0));
+      opacity:.65;
     }
 
-    .hero-text {
-      max-width: 600px;
+    /* ===== Cursor + magnetic ===== */
+    .cursor{
+      position:fixed; left:0; top:0;
+      width:14px; height:14px;
+      border-radius:999px;
+      background: rgba(240,240,240,0.95);
+      mix-blend-mode:difference;
+      pointer-events:none;
+      z-index:9999;
+      transform: translate(-50%,-50%);
     }
+    .cursorRing{
+      position:fixed; left:0; top:0;
+      width:56px; height:56px;
+      border-radius:999px;
+      border:1px solid rgba(240,240,240,0.55);
+      mix-blend-mode:difference;
+      pointer-events:none;
+      z-index:9998;
+      transform: translate(-50%,-50%);
+      opacity:.9;
+    }
+    .magnetic{ display:inline-flex; align-items:center; gap:.55rem; will-change:transform; }
 
-    .hero-tag {
-      display: inline-block;
-      font-size: 0.75rem;
-      font-weight: 600;
-      letter-spacing: 2px;
+    /* ===== Hero typography ===== */
+    .heroZh{
+      font-family: "Playfair Display", serif;
+      letter-spacing: -0.04em;
+      text-shadow:
+        0 0 14px rgba(204,255,0,0.10),
+        0 0 70px rgba(204,255,0,0.08),
+        0 0 140px rgba(204,255,0,0.06);
+    }
+    .heroEn{
+      font-family: "Cormorant Garamond", serif;
+      letter-spacing: .32em;
       text-transform: uppercase;
-      color: #76B900;
-      margin-bottom: 24px;
-      padding: 8px 16px;
-      background: rgba(118, 185, 0, 0.1);
-      border: 1px solid rgba(118, 185, 0, 0.3);
-      border-radius: 4px;
-    }
-
-    .hero-title {
-      font-size: clamp(2.5rem, 6vw, 4.5rem);
-      font-weight: 800;
-      line-height: 1.1;
-      margin-bottom: 24px;
-      background: linear-gradient(135deg, #ffffff 0%, #a0a0a0 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-
-    .hero-subtitle {
-      font-size: 1.25rem;
-      color: #b0b0b0;
-      line-height: 1.8;
-      margin-bottom: 40px;
-      font-weight: 300;
-    }
-
-    .hero-cta {
-      display: inline-flex;
-      align-items: center;
-      gap: 12px;
-      padding: 16px 32px;
-      background: #76B900;
-      color: #000000;
-      font-weight: 700;
-      font-size: 0.95rem;
-      text-decoration: none;
-      border-radius: 4px;
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      box-shadow: 0 4px 20px rgba(118, 185, 0, 0.3);
-      border: none;
-      cursor: pointer;
-    }
-
-    .hero-cta:hover {
-      background: #8FD900;
-      transform: translateY(-2px);
-      box-shadow: 0 8px 30px rgba(118, 185, 0, 0.4);
-    }
-
-    /* Floating Cards */
-    .floating-cards {
-      position: relative;
-      height: 600px;
-      perspective: 1000px;
-    }
-
-    .float-card {
-      position: absolute;
-      background: rgba(20, 20, 20, 0.6);
-      backdrop-filter: blur(20px);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 12px;
-      padding: 24px;
-      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-      cursor: pointer;
-    }
-
-    .float-card:hover {
-      background: rgba(30, 30, 30, 0.8);
-      border-color: rgba(118, 185, 0, 0.5);
-      transform: translateY(-8px) scale(1.02);
-      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
-    }
-
-    .card-icon {
-      width: 60px;
-      height: 60px;
-      margin-bottom: 16px;
-      border-radius: 8px;
-      background: linear-gradient(135deg, rgba(118, 185, 0, 0.2), rgba(118, 185, 0, 0.05));
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border: 1px solid rgba(118, 185, 0, 0.3);
-    }
-
-    .card-icon svg {
-      width: 32px;
-      height: 32px;
-      stroke: #76B900;
-      fill: none;
-      stroke-width: 2;
-    }
-
-    .card-title {
-      font-size: 1rem;
-      font-weight: 600;
-      color: #ffffff;
-      margin-bottom: 8px;
-    }
-
-    .card-desc {
-      font-size: 0.85rem;
-      color: #888888;
-      line-height: 1.5;
-    }
-
-    /* Positioning for cards */
-    .float-card:nth-child(1) {
-      top: 50px;
-      right: 100px;
-      width: 280px;
-      z-index: 3;
-    }
-
-    .float-card:nth-child(2) {
-      top: 180px;
-      right: 400px;
-      width: 260px;
-      z-index: 2;
-    }
-
-    .float-card:nth-child(3) {
-      top: 320px;
-      right: 200px;
-      width: 240px;
-      z-index: 1;
-    }
-
-    .float-card:nth-child(4) {
-      bottom: 80px;
-      right: 420px;
-      width: 220px;
-      z-index: 2;
-    }
-
-    .float-card:nth-child(5) {
-      bottom: 100px;
-      right: 80px;
-      width: 260px;
-      z-index: 3;
-    }
-
-    /* Avatar Upload Section - Now in navbar */
-
-    .avatar-container {
-      width: 100px;
-      height: 100px;
-      border-radius: 50%;
-      overflow: hidden;
-      border: 3px solid rgba(118, 185, 0, 0.5);
-      cursor: pointer;
-      transition: all 0.3s;
-      box-shadow: 0 0 0 0 rgba(118, 185, 0, 0.4);
-      animation: pulse 2s infinite;
-    }
-
-    @keyframes pulse {
-      0%, 100% {
-        box-shadow: 0 0 0 0 rgba(118, 185, 0, 0.4);
-      }
-      50% {
-        box-shadow: 0 0 0 10px rgba(118, 185, 0, 0);
-      }
-    }
-
-    .avatar-container:hover {
-      transform: scale(1.1);
-      border-color: #76B900;
-    }
-
-    .avatar-container img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-
-    .avatar-placeholder {
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(135deg, #1a1a1a, #0a0a0a);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      color: #666666;
-    }
-
-    /* Section Styling */
-    section {
-      position: relative;
-      padding: 120px 60px;
-      max-width: 1400px;
-      margin: 0 auto;
-    }
-
-    .section-header {
-      margin-bottom: 80px;
-    }
-
-    .section-tag {
-      font-size: 0.75rem;
-      font-weight: 600;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      color: #76B900;
-      margin-bottom: 16px;
-      display: inline-block;
-    }
-
-    .section-title {
-      font-size: clamp(2rem, 4vw, 3.5rem);
-      font-weight: 800;
-      margin-bottom: 16px;
-      background: linear-gradient(135deg, #ffffff 0%, #808080 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-
-    .section-subtitle {
-      font-size: 1.1rem;
-      color: #888888;
-      max-width: 700px;
-      line-height: 1.8;
-    }
-
-    /* Grid Layouts */
-    .grid-2 {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 32px;
-    }
-
-    .grid-3 {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 32px;
-    }
-
-    .grid-4 {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 24px;
-    }
-
-    /* Premium Card */
-    .premium-card {
-      background: linear-gradient(135deg, rgba(20, 20, 20, 0.8), rgba(10, 10, 10, 0.9));
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: 16px;
-      padding: 40px;
-      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-      position: relative;
-      overflow: hidden;
-    }
-
-    .premium-card::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 2px;
-      background: linear-gradient(90deg, transparent, #76B900, transparent);
-      transform: scaleX(0);
-      transition: transform 0.4s;
-    }
-
-    .premium-card:hover {
-      background: linear-gradient(135deg, rgba(30, 30, 30, 0.9), rgba(15, 15, 15, 1));
-      border-color: rgba(118, 185, 0, 0.3);
-      transform: translateY(-8px);
-      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
-    }
-
-    .premium-card:hover::before {
-      transform: scaleX(1);
-    }
-
-    .card-number {
-      font-size: 3rem;
-      font-weight: 900;
-      background: linear-gradient(135deg, #76B900, #5a9100);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      margin-bottom: 16px;
-      line-height: 1;
-    }
-
-    .card-label {
-      font-size: 0.85rem;
-      color: #666666;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      margin-bottom: 8px;
-    }
-
-    .card-value {
-      font-size: 1.5rem;
-      font-weight: 700;
-      color: #ffffff;
-      margin-bottom: 8px;
-    }
-
-    .card-subvalue {
-      font-size: 0.95rem;
-      color: #888888;
-    }
-
-    /* Timeline */
-    .timeline {
-      position: relative;
-      padding-left: 60px;
-    }
-
-    .timeline::before {
-      content: '';
-      position: absolute;
-      left: 0;
-      top: 0;
-      bottom: 0;
-      width: 2px;
-      background: linear-gradient(180deg, #76B900, transparent);
-    }
-
-    .timeline-item {
-      position: relative;
-      margin-bottom: 60px;
-      padding-left: 40px;
-    }
-
-    .timeline-item::before {
-      content: '';
-      position: absolute;
-      left: -63px;
-      top: 8px;
-      width: 16px;
-      height: 16px;
-      background: #76B900;
-      border-radius: 50%;
-      border: 3px solid #000000;
-      box-shadow: 0 0 0 4px rgba(118, 185, 0, 0.2);
-    }
-
-    .timeline-date {
-      font-size: 0.85rem;
-      color: #76B900;
-      font-weight: 600;
-      margin-bottom: 12px;
-      letter-spacing: 0.5px;
-    }
-
-    .timeline-title {
-      font-size: 1.5rem;
-      font-weight: 700;
-      color: #ffffff;
-      margin-bottom: 8px;
-    }
-
-    .timeline-org {
-      font-size: 1rem;
-      color: #888888;
-      margin-bottom: 16px;
-      font-weight: 500;
-    }
-
-    .timeline-desc {
-      font-size: 0.95rem;
-      color: #b0b0b0;
-      line-height: 1.8;
-    }
-
-    /* Awards Grid */
-    .award-card {
-      background: linear-gradient(135deg, rgba(20, 20, 20, 0.6), rgba(10, 10, 10, 0.8));
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: 12px;
-      padding: 32px;
-      transition: all 0.4s;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .award-card::after {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: radial-gradient(circle at top right, rgba(118, 185, 0, 0.1), transparent 60%);
-      opacity: 0;
-      transition: opacity 0.4s;
-    }
-
-    .award-card:hover {
-      border-color: rgba(118, 185, 0, 0.4);
-      transform: translateY(-4px);
-      box-shadow: 0 16px 48px rgba(0, 0, 0, 0.4);
-    }
-
-    .award-card:hover::after {
-      opacity: 1;
-    }
-
-    .award-icon {
-      width: 56px;
-      height: 56px;
-      background: linear-gradient(135deg, rgba(118, 185, 0, 0.2), rgba(118, 185, 0, 0.05));
-      border-radius: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-bottom: 20px;
-      border: 1px solid rgba(118, 185, 0, 0.3);
-    }
-
-    .award-icon svg {
-      width: 28px;
-      height: 28px;
-      stroke: #76B900;
-      fill: none;
-      stroke-width: 2;
-    }
-
-    .award-title {
-      font-size: 1.1rem;
-      font-weight: 600;
-      color: #ffffff;
-      margin-bottom: 8px;
-    }
-
-    .award-subtitle {
-      font-size: 0.9rem;
-      color: #888888;
-      line-height: 1.6;
-    }
-
-    /* Gallery */
-    .gallery-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-      gap: 24px;
-    }
-
-    .gallery-item {
-      aspect-ratio: 1;
-      border-radius: 16px;
-      overflow: hidden;
-      position: relative;
-      cursor: pointer;
-      background: #0a0a0a;
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      transition: all 0.4s;
-    }
-
-    .gallery-item:hover {
-      border-color: rgba(118, 185, 0, 0.5);
-      transform: scale(1.02);
-      box-shadow: 0 16px 48px rgba(0, 0, 0, 0.6);
-    }
-
-    .gallery-item img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      transition: transform 0.6s;
-    }
-
-    .gallery-item:hover img {
-      transform: scale(1.1);
-    }
-
-    .gallery-upload {
-      aspect-ratio: 1;
-      border-radius: 16px;
-      border: 2px dashed rgba(118, 185, 0, 0.3);
-      background: rgba(20, 20, 20, 0.4);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      transition: all 0.3s;
-      color: #666666;
-    }
-
-    .gallery-upload:hover {
-      border-color: #76B900;
-      background: rgba(118, 185, 0, 0.05);
-      color: #76B900;
-    }
-
-    .gallery-upload svg {
-      width: 48px;
-      height: 48px;
-      margin-bottom: 16px;
-      stroke: currentColor;
-      fill: none;
-      stroke-width: 2;
-    }
-
-    /* Contact */
-    .contact-card {
-      background: linear-gradient(135deg, rgba(20, 20, 20, 0.6), rgba(10, 10, 10, 0.8));
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: 12px;
-      padding: 32px;
-      display: flex;
-      align-items: center;
-      gap: 24px;
-      transition: all 0.3s;
-    }
-
-    .contact-card:hover {
-      border-color: rgba(118, 185, 0, 0.4);
-      background: linear-gradient(135deg, rgba(30, 30, 30, 0.8), rgba(15, 15, 15, 0.9));
-      transform: translateX(8px);
-    }
-
-    .contact-icon {
-      width: 64px;
-      height: 64px;
-      background: linear-gradient(135deg, rgba(118, 185, 0, 0.2), rgba(118, 185, 0, 0.05));
-      border-radius: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-      border: 1px solid rgba(118, 185, 0, 0.3);
-    }
-
-    .contact-icon svg {
-      width: 28px;
-      height: 28px;
-      stroke: #76B900;
-      fill: none;
-      stroke-width: 2;
-    }
-
-    .contact-label {
-      font-size: 0.75rem;
-      color: #666666;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      margin-bottom: 4px;
-    }
-
-    .contact-value {
-      font-size: 1.1rem;
-      font-weight: 600;
-      color: #ffffff;
-    }
-
-    /* Footer */
-    .footer {
-      padding: 60px;
-      text-align: center;
-      border-top: 1px solid rgba(255, 255, 255, 0.08);
-      color: #666666;
-      font-size: 0.9rem;
-    }
-
-    /* Lightbox */
-    .lightbox {
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.95);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 1000;
-      opacity: 0;
-      visibility: hidden;
-      transition: all 0.3s;
+      color: rgba(240,240,240,.62);
+    }
+
+    /* ===== Drag affordance ===== */
+    .drag-hint{
+      display:inline-flex;
+      align-items:center;
+      gap:.5rem;
+      font-size:.75rem;
+      color: rgba(240,240,240,.55);
+      user-select:none;
+    }
+    .draggable{
+      touch-action:none;
+      user-select:none;
+      will-change:transform;
+    }
+    .dragging{
+      cursor:grabbing !important;
+      transform: translate3d(var(--dx,0px), var(--dy,0px), 0px) scale(1.02);
+      border-color: rgba(204,255,0,.45) !important;
+      box-shadow: 0 30px 90px rgba(0,0,0,.65);
+    }
+
+    /* ===== Experience timeline hover dim ===== */
+    .tl-item{ transition: opacity .22s ease, transform .22s ease, filter .22s ease, border-color .22s ease; }
+    .tl-item.is-dim{ opacity:.26; filter:saturate(.7); }
+    .tl-dot{
+      width:10px; height:10px; border-radius:999px;
+      background: rgba(240,240,240,.9);
+      box-shadow: 0 0 0 7px rgba(204,255,0,0.06);
+      flex-shrink:0;
+      margin-top:.55rem;
+    }
+
+    /* ===== Marquee ===== */
+    .marquee{
+      mask-image: linear-gradient(90deg, transparent, black 12%, black 88%, transparent);
+      -webkit-mask-image: linear-gradient(90deg, transparent, black 12%, black 88%, transparent);
+    }
+    .marquee-track{
+      display:flex;
+      gap:1.1rem;
+      width:max-content;
+      will-change: transform;
+      animation: marquee 18s linear infinite;
+    }
+    .marquee:hover .marquee-track{ animation-play-state:paused; }
+    @keyframes marquee{
+      from{ transform: translateX(0); }
+      to{ transform: translateX(-50%); }
+    }
+
+    /* ===== Portfolio drag sort ===== */
+    .gallery{
+      display:grid;
+      grid-template-columns: repeat(3, minmax(0,1fr));
+      gap: .9rem;
+    }
+    @media (max-width: 768px){
+      .gallery{ grid-template-columns: repeat(2, minmax(0,1fr)); }
+    }
+    .tile{
+      border-radius: 18px;
+      overflow:hidden;
+      border:1px solid rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.05);
+      position:relative;
+      aspect-ratio: 1 / 1;
+      transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease, opacity .18s ease;
+    }
+    .tile:hover{ border-color: rgba(255,255,255,0.22); transform: translateY(-2px); }
+    .tile.drag-over{ outline: 2px solid rgba(204,255,0,.45); }
+    .tile img{ width:100%; height:100%; object-fit:cover; }
+    .chip-btn{
+      position:absolute; top:10px; right:10px;
+      width:34px; height:34px;
+      border-radius:999px;
+      background: rgba(0,0,0,0.35);
+      border:1px solid rgba(255,255,255,0.18);
+      display:flex; align-items:center; justify-content:center;
       backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
     }
-
-    .lightbox.active {
-      opacity: 1;
-      visibility: visible;
+    .chip-btn:hover{ background: rgba(0,0,0,0.55); }
+    .uploadTile{
+      border:1px dashed rgba(255,255,255,0.20);
+      background: rgba(255,255,255,0.04);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      flex-direction:column;
+      gap:.35rem;
+      color: rgba(240,240,240,.72);
     }
+    .uploadTile:hover{ border-color: rgba(204,255,0,.45); }
 
-    .lightbox img {
-      max-width: 90%;
-      max-height: 85vh;
-      border-radius: 8px;
-      box-shadow: 0 20px 80px rgba(0, 0, 0, 0.8);
+    /* ===== Lightbox ===== */
+    .lightbox{
+      position:fixed; inset:0;
+      background: rgba(0,0,0,0.86);
+      display:flex; align-items:center; justify-content:center;
+      z-index: 2000;
+      opacity:0;
+      pointer-events:none;
+      transition: opacity .22s ease;
     }
-
-    .lightbox-close {
-      position: absolute;
-      top: 40px;
-      right: 40px;
-      width: 48px;
-      height: 48px;
-      background: rgba(255, 255, 255, 0.1);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      border-radius: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      transition: all 0.3s;
+    .lightbox.active{ opacity:1; pointer-events:auto; }
+    .lightbox img{
+      max-width: min(92vw, 1100px);
+      max-height: 78vh;
+      border-radius: 18px;
+      box-shadow: 0 40px 120px rgba(0,0,0,.65);
+      transform: scale(.98);
+      transition: transform .22s ease;
     }
+    .lightbox.active img{ transform: scale(1); }
 
-    .lightbox-close:hover {
-      background: rgba(118, 185, 0, 0.2);
-      border-color: #76B900;
-    }
-
-    .lightbox-close svg {
-      width: 24px;
-      height: 24px;
-      stroke: #ffffff;
-      fill: none;
-      stroke-width: 2;
-    }
-
-    /* Responsive */
-    @media (max-width: 1200px) {
-      .hero-content {
-        grid-template-columns: 1fr;
-        gap: 60px;
-      }
-
-      .floating-cards {
-        display: none;
-      }
-
-      .grid-2, .grid-3, .grid-4 {
-        grid-template-columns: 1fr;
-      }
-      
-      nav ul {
-        display: none !important;
-      }
-    }
-
-    @media (max-width: 768px) {
-      nav > div {
-        padding: 16px 24px !important;
-      }
-      
-      nav > div > div:first-child > div:last-child {
-        display: none;
-      }
-      
-      .hero-content,
-      section {
-        padding: 60px 24px;
-      }
-
-      .hero-title {
-        font-size: 2rem;
-      }
-
-      .section-title {
-        font-size: 1.75rem;
-      }
-
-      .timeline {
-        padding-left: 40px;
-      }
-
-      .gallery-grid {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    /* Scroll animations */
-    .fade-in {
-      opacity: 0;
-      transform: translateY(30px);
-    }
-
-    .fade-in.visible {
-      opacity: 1;
-      transform: translateY(0);
-      transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-    }
+    /* Mobile: allow scrolling sections */
+    html{ scroll-behavior:smooth; }
   </style>
-  <base target="_blank">
 </head>
+
 <body>
-  <div id="app">
-    <!-- Navigation Bar -->
-    <nav style="position: fixed; top: 0; left: 0; right: 0; z-index: 1000; background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(255, 255, 255, 0.08);">
-      <div style="max-width: 1400px; margin: 0 auto; padding: 20px 60px; display: flex; align-items: center; justify-content: space-between;">
-        <!-- Logo/Name -->
-        <div style="display: flex; align-items: center; gap: 16px;">
-          <div class="avatar-container" @click="triggerFileInput" style="width: 48px; height: 48px; border-width: 2px; animation: none;">
-            <img v-if="avatarUrl" :src="avatarUrl" alt="Zhelong Song">
-            <div v-else class="avatar-placeholder">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                <circle cx="12" cy="7" r="4"></circle>
-              </svg>
-            </div>
-            <input ref="fileInput" type="file" accept="image/*" style="display: none;" @change="handleFileChange">
+  <canvas id="voidCanvas"></canvas>
+  <div class="grid-overlay"></div>
+  <div class="noise"></div>
+
+  <!-- Cursor -->
+  <div class="cursor" id="cursor"></div>
+  <div class="cursorRing" id="cursorRing"></div>
+
+  <div id="app" class="relative">
+    <!-- Top Nav -->
+    <header class="mx-auto max-w-6xl px-6 pt-6">
+      <div class="glass rounded-2xl px-5 py-4 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <span class="w-2.5 h-2.5 rounded-full" :style="{ background: profileData.theme.accent }"></span>
+          <div class="text-sm opacity-80 tracking-wide">
+            <span class="opacity-60">/</span>
+            <span class="ml-2">{{ profileData.hero.subtitle }}</span>
           </div>
+        </div>
+
+        <nav class="hidden md:flex items-center gap-5 text-sm">
+          <a class="magnetic opacity-80 hover:opacity-100 transition" href="#about">About</a>
+          <a class="magnetic opacity-80 hover:opacity-100 transition" href="#experience">Experience</a>
+          <a class="magnetic opacity-80 hover:opacity-100 transition" href="#honors">Honors</a>
+          <a class="magnetic opacity-80 hover:opacity-100 transition" href="#portfolio">Portfolio</a>
+          <a class="magnetic px-3 py-1.5 rounded-xl border border-white/15 hover:border-white/30 transition"
+             href="#contact">
+            Contact <span class="inline-block w-1.5 h-1.5 rounded-full" :style="{ background: profileData.theme.accent }"></span>
+          </a>
+        </nav>
+
+        <a class="md:hidden magnetic px-3 py-1.5 rounded-xl border border-white/15 hover:border-white/30 transition text-sm"
+           href="#contact">
+          Contact
+        </a>
+      </div>
+    </header>
+
+    <main class="mx-auto max-w-6xl px-6">
+      <!-- HERO -->
+      <section id="home" class="pt-20 pb-14">
+        <div class="relative">
+          <div class="absolute -inset-6 rounded-[2.25rem] blur-2xl opacity-30"
+               :style="{ background: 'radial-gradient(circle at 30% 20%, ' + profileData.theme.accent + '33, transparent 55%), radial-gradient(circle at 70% 80%, rgba(255,255,255,0.10), transparent 60%)' }">
+          </div>
+
+          <div class="glass rounded-[2.25rem] p-9 md:p-14 relative overflow-hidden">
+            <div class="flex flex-col md:flex-row gap-10 md:items-start md:justify-between">
+              <!-- Avatar + Name -->
+              <div class="min-w-[260px]">
+                <div class="flex items-center gap-5">
+                  <div class="relative">
+                    <button class="draggable rounded-2xl border border-white/15 glass-lite p-2"
+                            @click="triggerAvatarUpload"
+                            ref="avatarWrap"
+                            data-draggable="avatar">
+                      <div class="w-24 h-24 rounded-2xl overflow-hidden border border-white/15 bg-white/5">
+                        <img v-if="avatarUrl" :src="avatarUrl" class="w-full h-full object-cover" alt="avatar">
+                        <div v-else class="w-full h-full grid place-items-center text-white/60">
+                          <i data-lucide="user" class="w-7 h-7"></i>
+                        </div>
+                      </div>
+                      <div class="mt-2 text-[11px] text-white/55 flex items-center justify-center gap-1.5">
+                        <i data-lucide="upload" class="w-3.5 h-3.5"></i>
+                        点击上传
+                      </div>
+                    </button>
+                    <input ref="avatarInput" type="file" accept="image/*" class="hidden" @change="handleAvatarChange">
+                  </div>
+
+                  <div>
+                    <div class="text-xs tracking-[0.22em] uppercase text-white/60">{{ profileData.hero.kicker }}</div>
+                    <h1 class="heroZh text-[clamp(2.6rem,6.2vw,5.6rem)] leading-[0.95] mt-2">
+                      <span class="heroIn">{{ profileData.hero.nameZh }}</span>
+                    </h1>
+                    <div class="heroEn text-sm md:text-base mt-3">{{ profileData.hero.nameEn }}</div>
+                  </div>
+                </div>
+
+                <p class="mt-6 text-white/70 leading-relaxed heroIn">
+                  {{ profileData.hero.desc }}
+                </p>
+
+                <div class="mt-6 flex flex-wrap gap-3">
+                  <a class="magnetic px-4 py-2.5 rounded-xl border border-white/15 hover:border-white/30 transition text-sm"
+                     :href="'mailto:' + profileData.contact.email">
+                    <i data-lucide="mail" class="w-4 h-4"></i>
+                    Email
+                  </a>
+                  <a class="magnetic px-4 py-2.5 rounded-xl border border-white/15 hover:border-white/30 transition text-sm"
+                     href="#portfolio">
+                    <i data-lucide="sparkles" class="w-4 h-4"></i>
+                    Portfolio
+                  </a>
+                  <a class="magnetic px-4 py-2.5 rounded-xl text-sm font-medium"
+                     :style="{ background: profileData.theme.accent, color: '#050505' }"
+                     href="#experience">
+                    <i data-lucide="arrow-down" class="w-4 h-4"></i>
+                    View Experience
+                  </a>
+                </div>
+
+                <div class="mt-5 drag-hint">
+                  <i data-lucide="hand" class="w-4 h-4"></i>
+                  拖拽：头像块 / About 卡片 / Portfolio 图片排序
+                </div>
+              </div>
+
+              <!-- Quick facts -->
+              <div class="flex-1 min-w-[260px]">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div class="glass-lite rounded-2xl p-5 border border-white/10">
+                    <div class="text-xs tracking-[0.22em] uppercase text-white/55">Education</div>
+                    <div class="mt-2 text-xl font-display">{{ profileData.about.education.school }}</div>
+                    <div class="mt-1 text-sm text-white/60">{{ profileData.about.education.degree }}</div>
+                  </div>
+
+                  <div class="glass-lite rounded-2xl p-5 border border-white/10">
+                    <div class="text-xs tracking-[0.22em] uppercase text-white/55">Focus</div>
+                    <div class="mt-2 text-xl font-display">{{ profileData.about.focus1 }}</div>
+                    <div class="mt-1 text-sm text-white/60">{{ profileData.about.focus2 }}</div>
+                  </div>
+
+                  <div class="glass-lite rounded-2xl p-5 border border-white/10 md:col-span-2">
+                    <div class="text-xs tracking-[0.22em] uppercase text-white/55">Keywords</div>
+                    <div class="mt-3 flex flex-wrap gap-2">
+                      <span v-for="(k,i) in profileData.skills.keywords" :key="i"
+                            class="px-3 py-1.5 rounded-xl border border-white/15 text-sm text-white/80">
+                        <span class="inline-block w-1.5 h-1.5 rounded-full mr-2 align-middle" :style="{ background: profileData.theme.accent }"></span>
+                        {{ k }}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="mt-7 hairline"></div>
+
+                <div class="mt-6 text-sm text-white/60 leading-relaxed">
+                  <div class="flex flex-wrap gap-4">
+                    <span class="text-white/45">Contact:</span>
+                    <span class="magnetic">{{ profileData.contact.email }}</span>
+                    <span class="text-white/45">·</span>
+                    <span class="magnetic">{{ profileData.contact.phone }}</span>
+                  </div>
+                  <div class="mt-2">
+                    <span class="text-white/45">Location:</span>
+                    <span class="ml-2">{{ profileData.contact.location }}</span>
+                    <span class="text-white/45 ml-2">·</span>
+                    <span class="ml-2">Birth: {{ profileData.contact.birth }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="absolute -right-28 -bottom-28 w-[560px] h-[560px] rounded-full blur-3xl opacity-20"
+                 :style="{ background: 'radial-gradient(circle, ' + profileData.theme.accent + '55, transparent 60%)' }"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ABOUT (Bento + draggable cards) -->
+      <section id="about" class="py-14">
+        <div class="flex items-end justify-between gap-6 flex-wrap">
           <div>
-            <div style="font-size: 1.1rem; font-weight: 700; color: #ffffff; letter-spacing: 0.5px;">ZHELONG SONG</div>
-            <div style="font-size: 0.7rem; color: #76B900; text-transform: uppercase; letter-spacing: 1px; margin-top: 2px;">Mechanical Engineering Researcher</div>
+            <div class="text-xs tracking-[0.22em] uppercase text-white/60">About</div>
+            <h2 class="text-3xl md:text-4xl font-display mt-2">Bento grid. Drag to play.</h2>
+          </div>
+          <div class="text-sm text-white/55 max-w-xl">
+            这里是信息层级最重要的区域：你可以拖拽卡片（有回弹），不改内容但更像作品集。
           </div>
         </div>
-        
-        <!-- Navigation Links -->
-        <ul style="display: flex; gap: 40px; list-style: none; margin: 0; padding: 0;">
-          <li><a href="#about" style="color: #b0b0b0; text-decoration: none; font-size: 0.95rem; font-weight: 500; transition: color 0.3s; position: relative;" @mouseover="e => e.target.style.color = '#76B900'" @mouseout="e => e.target.style.color = '#b0b0b0'">About</a></li>
-          <li><a href="#experience" style="color: #b0b0b0; text-decoration: none; font-size: 0.95rem; font-weight: 500; transition: color 0.3s;" @mouseover="e => e.target.style.color = '#76B900'" @mouseout="e => e.target.style.color = '#b0b0b0'">Experience</a></li>
-          <li><a href="#honors" style="color: #b0b0b0; text-decoration: none; font-size: 0.95rem; font-weight: 500; transition: color 0.3s;" @mouseover="e => e.target.style.color = '#76B900'" @mouseout="e => e.target.style.color = '#b0b0b0'">Honors</a></li>
-          <li><a href="#portfolio" style="color: #b0b0b0; text-decoration: none; font-size: 0.95rem; font-weight: 500; transition: color 0.3s;" @mouseover="e => e.target.style.color = '#76B900'" @mouseout="e => e.target.style.color = '#b0b0b0'">Portfolio</a></li>
-          <li><a href="#contact" style="color: #b0b0b0; text-decoration: none; font-size: 0.95rem; font-weight: 500; transition: color 0.3s;" @mouseover="e => e.target.style.color = '#76B900'" @mouseout="e => e.target.style.color = '#b0b0b0'">Contact</a></li>
-        </ul>
-      </div>
-    </nav>
 
-    <!-- Hero Section -->
-    <section class="hero-container">
-      <canvas id="canvas-3d"></canvas>
-      
-      <div class="hero-content">
-        <div class="hero-text">
-          <div class="hero-tag">RESEARCH & INNOVATION</div>
-          <h1 class="hero-title">Hi Friend,<br>Welcome to my world</h1>
-          <p class="hero-subtitle">
-            A fully dedicated mechanical engineering researcher, making advanced manufacturing accessible through laser additive technology and welding robotics.
-          </p>
-          <button class="hero-cta" @click="scrollToSection('about')">
-            Explore My Work
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <line x1="5" y1="12" x2="19" y2="12"></line>
-              <polyline points="12 5 19 12 12 19"></polyline>
-            </svg>
-          </button>
-        </div>
-
-        <div class="floating-cards">
-          <div class="float-card">
-            <div class="card-icon">
-              <svg viewBox="0 0 24 24">
-                <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
-                <path d="M2 17l10 5 10-5M2 12l10 5 10-5"></path>
-              </svg>
-            </div>
-            <div class="card-title">Laser Manufacturing</div>
-            <div class="card-desc">Advanced additive manufacturing techniques</div>
+        <div class="mt-8 grid grid-cols-1 md:grid-cols-12 gap-4 relative">
+          <!-- Bio -->
+          <div class="glass rounded-2xl p-6 md:col-span-7 border border-white/10 draggable"
+               ref="bentoBio"
+               data-draggable="bento">
+            <div class="text-xs tracking-[0.22em] uppercase text-white/55">Bio</div>
+            <p class="mt-3 text-base md:text-lg leading-relaxed text-white/75 font-elegant">
+              {{ profileData.about.bio }}
+            </p>
           </div>
 
-          <div class="float-card">
-            <div class="card-icon">
-              <svg viewBox="0 0 24 24">
-                <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
-                <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
-              </svg>
-            </div>
-            <div class="card-title">Welding Robotics</div>
-            <div class="card-desc">Automated welding systems & control</div>
+          <!-- Highlights -->
+          <div class="glass rounded-2xl p-6 md:col-span-5 border border-white/10 draggable"
+               ref="bentoHighlights"
+               data-draggable="bento">
+            <div class="text-xs tracking-[0.22em] uppercase text-white/55">Highlights</div>
+            <ul class="mt-3 space-y-2 text-sm md:text-base text-white/78">
+              <li v-for="(h,i) in profileData.about.highlights" :key="i" class="flex gap-3">
+                <span class="mt-2 w-1.5 h-1.5 rounded-full" :style="{ background: profileData.theme.accent }"></span>
+                <span>{{ h }}</span>
+              </li>
+            </ul>
           </div>
 
-          <div class="float-card">
-            <div class="card-icon">
-              <svg viewBox="0 0 24 24">
-                <circle cx="12" cy="12" r="10"></circle>
-                <polyline points="12 6 12 12 16 14"></polyline>
-              </svg>
-            </div>
-            <div class="card-title">Research Projects</div>
-            <div class="card-desc">Dual-arm robot assembly systems</div>
+          <!-- Cards -->
+          <div class="glass-lite rounded-2xl p-6 md:col-span-4 border border-white/10 draggable"
+               ref="bentoEdu"
+               data-draggable="bento">
+            <div class="text-xs tracking-[0.22em] uppercase text-white/55">Education</div>
+            <div class="mt-2 text-xl font-display text-white/90">{{ profileData.about.education.school }}</div>
+            <div class="mt-2 text-sm text-white/60">{{ profileData.about.education.degree }}</div>
+            <div class="mt-2 text-sm text-white/60">{{ profileData.about.education.note }}</div>
           </div>
 
-          <div class="float-card">
-            <div class="card-icon">
-              <svg viewBox="0 0 24 24">
-                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                <polyline points="14 2 14 8 20 8"></polyline>
-              </svg>
-            </div>
-            <div class="card-title">Publications</div>
-            <div class="card-desc">Core journal papers published</div>
+          <div class="glass-lite rounded-2xl p-6 md:col-span-4 border border-white/10 draggable"
+               ref="bentoAdvisor"
+               data-draggable="bento">
+            <div class="text-xs tracking-[0.22em] uppercase text-white/55">Supervisor</div>
+            <div class="mt-2 text-xl font-display text-white/90">{{ profileData.about.supervisor }}</div>
+            <div class="mt-2 text-sm text-white/60">{{ profileData.about.supervisorNote }}</div>
           </div>
 
-          <div class="float-card">
-            <div class="card-icon">
-              <svg viewBox="0 0 24 24">
-                <circle cx="12" cy="8" r="7"></circle>
-                <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"></polyline>
-              </svg>
-            </div>
-            <div class="card-title">Awards</div>
-            <div class="card-desc">International & national recognition</div>
+          <div class="glass-lite rounded-2xl p-6 md:col-span-4 border border-white/10 draggable"
+               ref="bentoPaper"
+               data-draggable="bento">
+            <div class="text-xs tracking-[0.22em] uppercase text-white/55">Publication</div>
+            <div class="mt-2 text-xl font-display text-white/90">{{ profileData.about.paper.title }}</div>
+            <div class="mt-2 text-sm text-white/60">{{ profileData.about.paper.note }}</div>
           </div>
         </div>
-      </div>
-    </section>
+      </section>
 
-    <!-- About Section -->
-    <section id="about" class="fade-in">
-      <div class="section-header">
-        <div class="section-tag">WHO I AM</div>
-        <h2 class="section-title">About Me</h2>
-        <p class="section-subtitle">
-          Mechanical Engineering graduate student specializing in laser additive manufacturing and welding robotics at South China University of Technology
-        </p>
-      </div>
-
-      <div class="grid-4" style="margin-bottom: 60px;">
-        <div class="premium-card">
-          <div class="card-number">01</div>
-          <div class="card-label">Education</div>
-          <div class="card-value">M.S. Mechanical Eng.</div>
-          <div class="card-subvalue">SCUT, 2024-Present</div>
-        </div>
-
-        <div class="premium-card">
-          <div class="card-number">02</div>
-          <div class="card-label">Research Focus</div>
-          <div class="card-value">Laser Additive</div>
-          <div class="card-subvalue">Manufacturing & Robotics</div>
-        </div>
-
-        <div class="premium-card">
-          <div class="card-number">1</div>
-          <div class="card-label">Publications</div>
-          <div class="card-value">Core Journal</div>
-          <div class="card-subvalue">Paper Published</div>
-        </div>
-
-        <div class="premium-card">
-          <div class="card-number">4+</div>
-          <div class="card-label">Recognition</div>
-          <div class="card-value">Major Awards</div>
-          <div class="card-subvalue">Int'l & National</div>
-        </div>
-      </div>
-
-      <div class="grid-2">
-        <div class="premium-card">
-          <div class="card-label">Academic Background</div>
-          <div class="card-value" style="font-size: 1.2rem;">South China University of Technology</div>
-          <div class="card-subvalue" style="margin-bottom: 16px;">Master's in Mechanical Engineering</div>
-          <div class="card-value" style="font-size: 1.2rem;">Shijiazhuang Tiedao University</div>
-          <div class="card-subvalue">Bachelor's (Ranked 2/236, Recommended for Postgraduate)</div>
-        </div>
-
-        <div class="premium-card">
-          <div class="card-label">Research Direction</div>
-          <div class="card-value" style="font-size: 1.2rem;">Laser Additive Manufacturing</div>
-          <div class="card-subvalue" style="margin-bottom: 16px;">Advanced material processing and 3D printing technologies</div>
-          <div class="card-value" style="font-size: 1.2rem;">Welding Robotics</div>
-          <div class="card-subvalue">Automated welding systems and motion control</div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Experience Section -->
-    <section id="experience" class="fade-in" style="background: radial-gradient(ellipse at center, rgba(20, 20, 20, 0.4) 0%, transparent 70%);">
-      <div class="section-header">
-        <div class="section-tag">MY JOURNEY</div>
-        <h2 class="section-title">Research Experience</h2>
-        <p class="section-subtitle">
-          Timeline of research projects, academic achievements, and professional development
-        </p>
-      </div>
-
-      <div class="timeline">
-        <div class="timeline-item">
-          <div class="timeline-date">October 2025 - October 2026</div>
-          <h3 class="timeline-title">Dual-Arm Robot Assembly Project R&D</h3>
-          <div class="timeline-org">GM Warren Technical Center, United States</div>
-          <p class="timeline-desc">
-            Participated in the development of dual-arm robot assembly systems, responsible for robot motion planning and coordinated control algorithm development. Focused on improving precision and efficiency in automated assembly processes.
-          </p>
-        </div>
-
-        <div class="timeline-item">
-          <div class="timeline-date">February 2025</div>
-          <h3 class="timeline-title">Academic Paper Publication</h3>
-          <div class="timeline-org">Journal of Mechanical & Electrical Engineering Technology</div>
-          <p class="timeline-desc">
-            Published comprehensive review paper "Research Status and Prospects of Humanoid Robot Welding Technology", accepted by Chinese core journal. The paper synthesizes current state-of-the-art in robotic welding systems.
-          </p>
-        </div>
-
-        <div class="timeline-item">
-          <div class="timeline-date">February 2023 - May 2023</div>
-          <h3 class="timeline-title">Mathematical Contest in Modeling (MCM)</h3>
-          <div class="timeline-org">COMAP - Mathematical Contest in Modeling</div>
-          <p class="timeline-desc">
-            Served as team leader and won Meritorious Winner (International First Prize). Developed mathematical models for complex real-world problems, demonstrating analytical and problem-solving capabilities.
-          </p>
-        </div>
-
-        <div class="timeline-item">
-          <div class="timeline-date">November 2022 - June 2023</div>
-          <h3 class="timeline-title">Smart Express Cabinet Replenishment System</h3>
-          <div class="timeline-org">Shijiazhuang Tiedao University</div>
-          <p class="timeline-desc">
-            Led structural design, scheme comparison and selection, model drawing design and modification for an intelligent logistics system. Focused on optimizing efficiency and user experience.
-          </p>
-        </div>
-      </div>
-    </section>
-
-    <!-- Honors Section -->
-    <section id="honors" class="fade-in">
-      <div class="section-header">
-        <div class="section-tag">ACHIEVEMENTS</div>
-        <h2 class="section-title">Honors & Awards</h2>
-        <p class="section-subtitle">
-          Recognition for academic excellence and competitive achievements in research and innovation
-        </p>
-      </div>
-
-      <div class="grid-2">
-        <div class="award-card">
-          <div class="award-icon">
-            <svg viewBox="0 0 24 24">
-              <circle cx="12" cy="8" r="7"></circle>
-              <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"></polyline>
-            </svg>
-          </div>
-          <div class="award-title">MCM Meritorious Winner</div>
-          <div class="award-subtitle">Mathematical Contest in Modeling · International First Prize</div>
-        </div>
-
-        <div class="award-card">
-          <div class="award-icon">
-            <svg viewBox="0 0 24 24">
-              <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"></path>
-              <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"></path>
-              <path d="M4 22h16"></path>
-              <path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"></path>
-              <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"></path>
-              <path d="M18 2H6v7a6 6 0 0 0 12 0V2z"></path>
-            </svg>
-          </div>
-          <div class="award-title">National 3D Digital Innovation Design Contest</div>
-          <div class="award-subtitle">3D Digital Design Competition · National Second Prize</div>
-        </div>
-
-        <div class="award-card">
-          <div class="award-icon">
-            <svg viewBox="0 0 24 24">
-              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>
-            </svg>
-          </div>
-          <div class="award-title">Hebei Province Mechanics Competition</div>
-          <div class="award-subtitle">Provincial Mechanics Contest · Provincial First Prize</div>
-        </div>
-
-        <div class="award-card">
-          <div class="award-icon">
-            <svg viewBox="0 0 24 24">
-              <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
-            </svg>
-          </div>
-          <div class="award-title">Challenge Cup Academic Works Competition</div>
-          <div class="award-subtitle">Provincial Academic Competition · Provincial Second Prize</div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Portfolio Section -->
-    <section id="portfolio" class="fade-in" style="background: radial-gradient(ellipse at center, rgba(20, 20, 20, 0.4) 0%, transparent 70%);">
-      <div class="section-header">
-        <div class="section-tag">MY WORK</div>
-        <h2 class="section-title">Portfolio</h2>
-        <p class="section-subtitle">
-          Showcase of research projects, technical work, and engineering achievements
-        </p>
-      </div>
-
-      <div class="gallery-grid">
-        <div 
-          v-for="(photo, index) in portfolioPhotos" 
-          :key="index"
-          class="gallery-item"
-          @click="openLightbox(index)">
-          <img :src="photo" alt="Portfolio">
-        </div>
-
-        <div class="gallery-upload" @click="triggerPortfolioUpload">
-          <svg viewBox="0 0 24 24">
-            <line x1="12" y1="5" x2="12" y2="19"></line>
-            <line x1="5" y1="12" x2="19" y2="12"></line>
-          </svg>
-          <span style="font-size: 0.9rem; font-weight: 600;">Add Photo</span>
-        </div>
-
-        <input 
-          ref="portfolioInput" 
-          type="file" 
-          accept="image/*" 
-          multiple
-          style="display: none;" 
-          @change="handlePortfolioUpload">
-      </div>
-    </section>
-
-    <!-- Contact Section -->
-    <section id="contact" class="fade-in">
-      <div class="section-header">
-        <div class="section-tag">GET IN TOUCH</div>
-        <h2 class="section-title">Contact Information</h2>
-        <p class="section-subtitle">
-          Feel free to reach out for collaborations, research discussions, or opportunities
-        </p>
-      </div>
-
-      <div class="grid-2">
-        <div class="contact-card">
-          <div class="contact-icon">
-            <svg viewBox="0 0 24 24">
-              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
-              <polyline points="22,6 12,13 2,6"></polyline>
-            </svg>
-          </div>
+      <!-- EXPERIENCE (hover dim timeline) -->
+      <section id="experience" class="py-14">
+        <div class="flex items-end justify-between gap-6 flex-wrap">
           <div>
-            <div class="contact-label">Email Address</div>
-            <div class="contact-value">202421002662@mail.scut.edu.cn</div>
+            <div class="text-xs tracking-[0.22em] uppercase text-white/60">Experience</div>
+            <h2 class="text-3xl md:text-4xl font-display mt-2">Minimal timeline.</h2>
+          </div>
+          <div class="text-sm text-white/55 max-w-xl">
+            鼠标悬停高亮当前经历，其他自动变暗（Focus 体验更像 Awwwards）。
           </div>
         </div>
 
-        <div class="contact-card">
-          <div class="contact-icon">
-            <svg viewBox="0 0 24 24">
-              <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
-            </svg>
+        <div class="mt-10 glass rounded-2xl p-6 md:p-8 border border-white/10">
+          <div class="space-y-4" @mouseleave="activeExpIndex = -1">
+            <div v-for="(e, idx) in profileData.experience" :key="idx"
+                 class="tl-item rounded-2xl p-5 md:p-6 border border-white/10 hover:border-white/25"
+                 :class="{ 'is-dim': activeExpIndex !== -1 && activeExpIndex !== idx }"
+                 @mouseenter="activeExpIndex = idx">
+              <div class="flex items-start gap-4">
+                <div class="tl-dot"></div>
+                <div class="flex-1">
+                  <div class="text-xs text-white/55 tracking-wide">{{ e.date }}</div>
+                  <div class="mt-1 text-xl md:text-2xl text-white/90">
+                    <span class="font-display">{{ e.title }}</span>
+                  </div>
+                  <div class="mt-1 text-sm text-white/60 font-elegant">{{ e.org }}</div>
+                  <div class="mt-3 text-sm md:text-base text-white/75 leading-relaxed">
+                    {{ e.desc }}
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
+        </div>
+      </section>
+
+      <!-- HONORS -->
+      <section id="honors" class="py-14">
+        <div class="flex items-end justify-between gap-6 flex-wrap">
           <div>
-            <div class="contact-label">Phone Number</div>
-            <div class="contact-value">+86 18272471376</div>
+            <div class="text-xs tracking-[0.22em] uppercase text-white/60">Honors</div>
+            <h2 class="text-3xl md:text-4xl font-display mt-2">Awards that matter.</h2>
+          </div>
+          <div class="text-sm text-white/55 max-w-xl">
+            不做花哨图标墙：用克制卡片把信息讲清楚。
           </div>
         </div>
 
-        <div class="contact-card">
-          <div class="contact-icon">
-            <svg viewBox="0 0 24 24">
-              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
-              <circle cx="12" cy="10" r="3"></circle>
-            </svg>
+        <div class="mt-10 glass rounded-2xl p-6 md:p-8 border border-white/10">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div v-for="(h,i) in profileData.honors" :key="i"
+                 class="glass-lite rounded-2xl p-5 border border-white/10 hover:border-white/25 transition">
+              <div class="flex items-start gap-4">
+                <div class="w-11 h-11 rounded-2xl grid place-items-center border border-white/15"
+                     :style="{ background: 'rgba(204,255,0,0.10)' }">
+                  <i :data-lucide="h.icon" class="w-5 h-5" :style="{ color: profileData.theme.accent }"></i>
+                </div>
+                <div>
+                  <div class="text-white/90 font-display text-lg">{{ h.title }}</div>
+                  <div class="text-white/60 text-sm mt-1">{{ h.sub }}</div>
+                </div>
+              </div>
+            </div>
           </div>
+        </div>
+      </section>
+
+      <!-- SKILLS Marquee -->
+      <section id="skills" class="py-14">
+        <div class="flex items-end justify-between gap-6 flex-wrap">
           <div>
-            <div class="contact-label">Location</div>
-            <div class="contact-value">Xiangyang, Hubei, China</div>
+            <div class="text-xs tracking-[0.22em] uppercase text-white/60">Skills</div>
+            <h2 class="text-3xl md:text-4xl font-display mt-2">Infinite marquee.</h2>
+          </div>
+          <div class="text-sm text-white/55 max-w-xl">
+            Hover 暂停；强调关键词，不堆叠段落。
           </div>
         </div>
 
-        <div class="contact-card">
-          <div class="contact-icon">
-            <svg viewBox="0 0 24 24">
-              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-              <line x1="16" y1="2" x2="16" y2="6"></line>
-              <line x1="8" y1="2" x2="8" y2="6"></line>
-              <line x1="3" y1="10" x2="21" y2="10"></line>
-            </svg>
+        <div class="mt-8 glass rounded-2xl p-6 md:p-8 border border-white/10">
+          <div class="marquee">
+            <div class="marquee-track">
+              <template v-for="rep in 2" :key="rep">
+                <div v-for="(s,i) in profileData.skills.marquee" :key="rep+'-'+i"
+                     class="flex items-center gap-3 px-4 py-3 rounded-2xl border border-white/10 bg-white/5">
+                  <span class="w-1.5 h-1.5 rounded-full" :style="{ background: profileData.theme.accent }"></span>
+                  <span class="text-base md:text-lg text-white/85 whitespace-nowrap">{{ s }}</span>
+                </div>
+              </template>
+            </div>
           </div>
+        </div>
+      </section>
+
+      <!-- PORTFOLIO (drag sort + upload + lightbox) -->
+      <section id="portfolio" class="py-14">
+        <div class="flex items-end justify-between gap-6 flex-wrap">
           <div>
-            <div class="contact-label">Date of Birth</div>
-            <div class="contact-value">August 2000</div>
+            <div class="text-xs tracking-[0.22em] uppercase text-white/60">Portfolio</div>
+            <h2 class="text-3xl md:text-4xl font-display mt-2">Drag. Reorder. Showcase.</h2>
+          </div>
+          <div class="text-sm text-white/55 max-w-xl">
+            图片支持拖拽排序（桌面拖放 / 手机长按拖动）。数据保存在 localStorage。
           </div>
         </div>
-      </div>
-    </section>
 
-    <!-- Footer -->
-    <footer class="footer">
-      <p>© 2026 Zhelong Song. All rights reserved.</p>
-      <p style="margin-top: 8px; font-size: 0.85rem;">Designed with precision · Built with passion for engineering excellence</p>
-    </footer>
+        <div class="mt-10 glass rounded-2xl p-6 md:p-8 border border-white/10">
+          <div class="gallery">
+            <!-- Existing photos -->
+            <div v-for="(photo, idx) in portfolioPhotos" :key="photo.id"
+                 class="tile"
+                 draggable="true"
+                 @dragstart="onDragStart(idx)"
+                 @dragover.prevent="onDragOver(idx)"
+                 @dragleave="onDragLeave(idx)"
+                 @drop.prevent="onDrop(idx)"
+                 @click="openLightbox(idx)"
+                 :class="{ 'drag-over': dragOverIndex === idx }">
+              <img :src="photo.src" alt="作品">
+              <button class="chip-btn" @click.stop="deletePhoto(idx)" title="删除">
+                <i data-lucide="x" class="w-4 h-4 text-white/90"></i>
+              </button>
+            </div>
+
+            <!-- Upload tile -->
+            <div class="tile uploadTile" @click="triggerPortfolioUpload">
+              <i data-lucide="plus" class="w-8 h-8" :style="{ color: profileData.theme.accent }"></i>
+              <div class="text-sm font-medium">添加照片</div>
+              <div class="text-xs text-white/55">点击上传</div>
+              <input ref="portfolioInput" type="file" accept="image/*" multiple class="hidden" @change="handlePortfolioUpload">
+            </div>
+          </div>
+
+          <div class="mt-4 text-xs text-white/50">
+            提示：拖动图片可排序；点击图片可查看大图。
+          </div>
+        </div>
+      </section>
+
+      <!-- CONTACT (half screen) -->
+      <section id="contact" class="py-14 pb-24">
+        <div class="glass rounded-[2.25rem] p-10 md:p-14 overflow-hidden relative min-h-[50vh] flex flex-col justify-between border border-white/10">
+          <div class="absolute -left-28 -top-28 w-[620px] h-[620px] rounded-full blur-3xl opacity-20"
+               :style="{ background: 'radial-gradient(circle, ' + profileData.theme.accent + '44, transparent 60%)' }"></div>
+
+          <div>
+            <div class="text-xs tracking-[0.22em] uppercase text-white/60">Contact</div>
+            <div class="mt-4 text-[clamp(2.2rem,5.2vw,4.8rem)] leading-[0.95] font-display">
+              <span class="block text-white/90">联系我</span>
+              <span class="block font-semibold" :style="{ color: profileData.theme.accent }">Contact me</span>
+            </div>
+          </div>
+
+          <div class="mt-10 grid grid-cols-1 md:grid-cols-2 gap-4">
+            <a class="magnetic glass-lite rounded-2xl p-5 border border-white/10 hover:border-white/25 transition"
+               :href="'mailto:' + profileData.contact.email">
+              <i data-lucide="mail" class="w-5 h-5" :style="{ color: profileData.theme.accent }"></i>
+              <div>
+                <div class="text-xs text-white/55 tracking-[0.22em] uppercase">Email</div>
+                <div class="text-white/85 mt-1 font-elegant">{{ profileData.contact.email }}</div>
+              </div>
+            </a>
+
+            <div class="glass-lite rounded-2xl p-5 border border-white/10">
+              <div class="flex items-center gap-3">
+                <i data-lucide="phone" class="w-5 h-5" :style="{ color: profileData.theme.accent }"></i>
+                <div>
+                  <div class="text-xs text-white/55 tracking-[0.22em] uppercase">Phone</div>
+                  <div class="text-white/85 mt-1 font-elegant">{{ profileData.contact.phone }}</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="glass-lite rounded-2xl p-5 border border-white/10">
+              <div class="flex items-center gap-3">
+                <i data-lucide="map-pin" class="w-5 h-5" :style="{ color: profileData.theme.accent }"></i>
+                <div>
+                  <div class="text-xs text-white/55 tracking-[0.22em] uppercase">Location</div>
+                  <div class="text-white/85 mt-1 font-elegant">{{ profileData.contact.location }}</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="glass-lite rounded-2xl p-5 border border-white/10">
+              <div class="flex items-center gap-3">
+                <i data-lucide="calendar" class="w-5 h-5" :style="{ color: profileData.theme.accent }"></i>
+                <div>
+                  <div class="text-xs text-white/55 tracking-[0.22em] uppercase">Birth</div>
+                  <div class="text-white/85 mt-1 font-elegant">{{ profileData.contact.birth }}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-10 text-xs text-white/45">
+            © {{ new Date().getFullYear() }} {{ profileData.hero.nameEn }} — Liquid Void + Drag Edition
+          </div>
+        </div>
+      </section>
+    </main>
 
     <!-- Lightbox -->
     <div class="lightbox" :class="{ active: lightboxOpen }" @click="closeLightbox">
-      <div class="lightbox-close" @click.stop="closeLightbox">
-        <svg viewBox="0 0 24 24">
-          <line x1="18" y1="6" x2="6" y2="18"></line>
-          <line x1="6" y1="6" x2="18" y2="18"></line>
-        </svg>
-      </div>
-      <img v-if="lightboxOpen" :src="portfolioPhotos[lightboxIndex]" alt="Portfolio">
+      <button class="chip-btn" style="position:absolute; top:18px; right:18px;" @click.stop="closeLightbox">
+        <i data-lucide="x" class="w-5 h-5 text-white/90"></i>
+      </button>
+
+      <button v-if="portfolioPhotos.length>1" class="chip-btn" style="position:absolute; left:18px; top:50%; transform:translateY(-50%);" @click.stop="prevImage">
+        <i data-lucide="chevron-left" class="w-5 h-5 text-white/90"></i>
+      </button>
+
+      <img v-if="lightboxOpen" :src="portfolioPhotos[lightboxIndex]?.src" alt="大图" @click.stop>
+
+      <button v-if="portfolioPhotos.length>1" class="chip-btn" style="position:absolute; right:18px; top:50%; transform:translateY(-50%);" @click.stop="nextImage">
+        <i data-lucide="chevron-right" class="w-5 h-5 text-white/90"></i>
+      </button>
     </div>
   </div>
 
   <script>
-    const { createApp, ref, onMounted } = Vue;
-    
+    /**
+     * =========================================================
+     * Easy Config (profileData) —— 只改这里即可换内容/颜色
+     * =========================================================
+     * 说明：你要求的信息保持不变，我已原样放入此对象。
+     */
+    const profileData = {
+      theme: {
+        bg: "#050505",
+        fg: "#F0F0F0",
+        accent: "#CCFF00"
+      },
+      hero: {
+        nameZh: "宋哲龙",
+        nameEn: "Song Zhelong",
+        kicker: "LIQUID VOID / GLASS / MOTION",
+        subtitle: "机械工程研究生 · Mechanical Engineering",
+        desc: "华南理工大学 · 激光增材制造 · 焊接机器人"
+      },
+      contact: {
+        email: "202421002662@mail.scut.edu.cn",
+        phone: "18272471376",
+        location: "湖北襄阳 · Xiangyang",
+        birth: "2000年8月 · August 2000"
+      },
+      about: {
+        bio:
+          "我是华南理工大学机械工程专业研究生，本科毕业于石家庄铁道大学（专业排名 2/236，保研）。专注于激光增材制造与焊接机器人技术研究。",
+        focus1: "激光增材制造",
+        focus2: "焊接机器人",
+        education: {
+          school: "华南理工大学",
+          degree: "机械工程硕士",
+          note: ""
+        },
+        supervisor: "王振民 教授",
+        supervisorNote: "",
+        paper: {
+          title: "核心期刊论文",
+          note: "1 篇"
+        },
+        highlights: [
+          "研究方向：激光增材制造 / 焊接机器人",
+          "目标：通过先进运动规划算法提升工业制造智能化水平",
+          "持续扩展：个人经历与旅行见闻的动态简历内容"
+        ]
+      },
+      experience: [
+        {
+          date: "2025.10 — 2026.10",
+          title: "双臂机器人装配项目研发",
+          org: "美国通用汽车沃伦研发中心",
+          desc: "参与双臂机器人装配系统的研发工作，负责机器人运动规划、协调控制算法开发。"
+        },
+        {
+          date: "2025.02",
+          title: "学术论文发表",
+          org: "《机电工程技术》期刊",
+          desc: "发表综述论文《人形机器人焊接技术研究现状与展望》，被中文核心期刊收录。"
+        },
+        {
+          date: "2023.02 — 2023.05",
+          title: "美国大学生数学建模竞赛",
+          org: "Mathematical Contest in Modeling",
+          desc: "担任队长，获国际一等奖（Meritorious Winner）。"
+        },
+        {
+          date: "2022.11 — 2023.06",
+          title: "智能快递柜补货系统项目",
+          org: "石家庄铁道大学",
+          desc: "负责项目结构设计、方案对比选型、模型图纸设计与修改。"
+        }
+      ],
+      honors: [
+        { title:"美国大学生数学建模竞赛", sub:"国际一等奖", icon:"award" },
+        { title:"全国3D数字创新设计大赛", sub:"国家二等奖", icon:"trophy" },
+        { title:"河北省力学竞赛", sub:"省级一等奖", icon:"medal" },
+        { title:"挑战杯学术作品竞赛", sub:"省级二等奖", icon:"star" }
+      ],
+      skills: {
+        keywords: ["激光增材制造","焊接机器人","运动规划","智能制造","科研写作"],
+        marquee: [
+          "Laser Additive Manufacturing",
+          "Welding Robotics",
+          "Motion Planning",
+          "Robot Coordination",
+          "Experiment Design",
+          "Technical Writing",
+          "CAD / Modeling",
+          "System Thinking",
+          "Research Presentation"
+        ]
+      }
+    };
+
+    const { createApp, ref, onMounted, nextTick } = Vue;
+
     createApp({
       setup() {
-        const fileInput = ref(null);
+        const activeExpIndex = ref(-1);
+
+        // Avatar
+        const avatarInput = ref(null);
+        const avatarUrl = ref(localStorage.getItem("avatarUrl") || null);
+
+        // Portfolio (store as [{id, src}])
         const portfolioInput = ref(null);
-        const avatarUrl = ref(localStorage.getItem('avatarUrl') || null);
-        const portfolioPhotos = ref(JSON.parse(localStorage.getItem('portfolioPhotos') || '[]'));
+        const portfolioPhotos = ref(JSON.parse(localStorage.getItem("portfolioPhotosV2") || "[]"));
+
+        // Drag & drop reorder
+        const dragFromIndex = ref(null);
+        const dragOverIndex = ref(null);
+
+        // Lightbox
         const lightboxOpen = ref(false);
         const lightboxIndex = ref(0);
 
-        // Three.js 3D Background
-        const init3DBackground = () => {
-          const canvas = document.getElementById('canvas-3d');
-          const scene = new THREE.Scene();
-          const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-          const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
-          
-          renderer.setSize(window.innerWidth, window.innerHeight);
-          camera.position.z = 5;
+        const persistPortfolio = () => {
+          localStorage.setItem("portfolioPhotosV2", JSON.stringify(portfolioPhotos.value));
+        };
 
-          // Create particle system
-          const particlesGeometry = new THREE.BufferGeometry();
-          const particlesCount = 2000;
-          const posArray = new Float32Array(particlesCount * 3);
-
-          for (let i = 0; i < particlesCount * 3; i++) {
-            posArray[i] = (Math.random() - 0.5) * 15;
-          }
-
-          particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
-          
-          const particlesMaterial = new THREE.PointsMaterial({
-            size: 0.03,
-            color: 0x76B900,
-            transparent: true,
-            opacity: 0.6
-          });
-
-          const particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial);
-          scene.add(particlesMesh);
-
-          // Create sphere wireframe
-          const sphereGeometry = new THREE.SphereGeometry(2, 32, 32);
-          const sphereMaterial = new THREE.MeshBasicMaterial({
-            color: 0x76B900,
-            wireframe: true,
-            transparent: true,
-            opacity: 0.1
-          });
-          const sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
-          sphere.position.x = 3;
-          scene.add(sphere);
-
-          // Animation
-          let mouseX = 0;
-          let mouseY = 0;
-
-          document.addEventListener('mousemove', (e) => {
-            mouseX = (e.clientX / window.innerWidth) * 2 - 1;
-            mouseY = -(e.clientY / window.innerHeight) * 2 + 1;
-          });
-
-          const animate = () => {
-            requestAnimationFrame(animate);
-
-            particlesMesh.rotation.y += 0.001;
-            particlesMesh.rotation.x = mouseY * 0.2;
-            particlesMesh.rotation.y = mouseX * 0.2;
-
-            sphere.rotation.y += 0.003;
-            sphere.rotation.x += 0.002;
-
-            renderer.render(scene, camera);
+        // ===== Avatar Upload =====
+        const triggerAvatarUpload = () => avatarInput.value?.click();
+        const handleAvatarChange = (e) => {
+          const file = e.target.files?.[0];
+          if (!file) return;
+          const reader = new FileReader();
+          reader.onload = (ev) => {
+            avatarUrl.value = ev.target.result;
+            localStorage.setItem("avatarUrl", ev.target.result);
           };
-
-          animate();
-
-          // Handle resize
-          window.addEventListener('resize', () => {
-            camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight);
-          });
+          reader.readAsDataURL(file);
         };
 
-        // Avatar upload
-        const triggerFileInput = () => {
-          fileInput.value.click();
-        };
-
-        const handleFileChange = (e) => {
-          const file = e.target.files[0];
-          if (file) {
-            const reader = new FileReader();
-            reader.onload = (event) => {
-              avatarUrl.value = event.target.result;
-              localStorage.setItem('avatarUrl', event.target.result);
-            };
-            reader.readAsDataURL(file);
-          }
-        };
-
-        // Portfolio upload
-        const triggerPortfolioUpload = () => {
-          portfolioInput.value.click();
-        };
-
+        // ===== Portfolio Upload =====
+        const triggerPortfolioUpload = () => portfolioInput.value?.click();
         const handlePortfolioUpload = (e) => {
-          const files = Array.from(e.target.files);
-          files.forEach(file => {
+          const files = Array.from(e.target.files || []);
+          files.forEach((file) => {
             const reader = new FileReader();
-            reader.onload = (event) => {
-              portfolioPhotos.value.push(event.target.result);
-              localStorage.setItem('portfolioPhotos', JSON.stringify(portfolioPhotos.value));
+            reader.onload = (ev) => {
+              portfolioPhotos.value.push({ id: cryptoRandomId(), src: ev.target.result });
+              persistPortfolio();
             };
             reader.readAsDataURL(file);
           });
+          e.target.value = "";
+        };
+        const deletePhoto = (idx) => {
+          portfolioPhotos.value.splice(idx, 1);
+          persistPortfolio();
         };
 
-        // Lightbox
-        const openLightbox = (index) => {
-          lightboxIndex.value = index;
+        // Desktop Drag & Drop reorder
+        const onDragStart = (idx) => {
+          dragFromIndex.value = idx;
+        };
+        const onDragOver = (idx) => {
+          dragOverIndex.value = idx;
+        };
+        const onDragLeave = (idx) => {
+          if (dragOverIndex.value === idx) dragOverIndex.value = null;
+        };
+        const onDrop = (idx) => {
+          const from = dragFromIndex.value;
+          if (from === null || from === undefined || from === idx) {
+            dragOverIndex.value = null;
+            dragFromIndex.value = null;
+            return;
+          }
+          const arr = portfolioPhotos.value.slice();
+          const [moved] = arr.splice(from, 1);
+          arr.splice(idx, 0, moved);
+          portfolioPhotos.value = arr;
+          persistPortfolio();
+          dragOverIndex.value = null;
+          dragFromIndex.value = null;
+        };
+
+        // ===== Lightbox =====
+        const openLightbox = (idx) => {
+          if (!portfolioPhotos.value.length) return;
+          lightboxIndex.value = idx;
           lightboxOpen.value = true;
+          document.body.style.overflow = "hidden";
         };
-
         const closeLightbox = () => {
           lightboxOpen.value = false;
+          document.body.style.overflow = "";
+        };
+        const prevImage = () => {
+          if (!portfolioPhotos.value.length) return;
+          lightboxIndex.value = (lightboxIndex.value - 1 + portfolioPhotos.value.length) % portfolioPhotos.value.length;
+        };
+        const nextImage = () => {
+          if (!portfolioPhotos.value.length) return;
+          lightboxIndex.value = (lightboxIndex.value + 1) % portfolioPhotos.value.length;
         };
 
-        // Scroll to section
-        const scrollToSection = (id) => {
-          const element = document.getElementById(id);
-          if (element) {
-            element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-          }
-        };
+        // ===== Pointer-based drag for mobile + bento + avatar =====
+        const attachPointerDrag = (el) => {
+          if (!el) return;
 
-        // Intersection Observer for fade-in animations
-        const observeElements = () => {
-          const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-              if (entry.isIntersecting) {
-                entry.target.classList.add('visible');
+          let startX = 0, startY = 0, dx = 0, dy = 0;
+          let dragging = false;
+
+          const onDown = (ev) => {
+            // only left button or touch
+            if (ev.pointerType === "mouse" && ev.button !== 0) return;
+            dragging = true;
+            el.setPointerCapture?.(ev.pointerId);
+            startX = ev.clientX; startY = ev.clientY;
+            dx = 0; dy = 0;
+            el.classList.add("dragging");
+          };
+
+          const onMove = (ev) => {
+            if (!dragging) return;
+            dx = ev.clientX - startX;
+            dy = ev.clientY - startY;
+            el.style.setProperty("--dx", dx + "px");
+            el.style.setProperty("--dy", dy + "px");
+            el.style.transform = `translate3d(${dx}px, ${dy}px, 0) scale(1.02)`;
+          };
+
+          const onUp = () => {
+            if (!dragging) return;
+            dragging = false;
+            el.classList.remove("dragging");
+            // spring back
+            gsap.to(el, {
+              duration: 0.7,
+              x: 0,
+              y: 0,
+              scale: 1,
+              ease: "elastic.out(1, 0.35)",
+              onUpdate: () => {
+                // gsap uses translate via transform; keep consistent
+              },
+              onComplete: () => {
+                el.style.transform = "";
+                el.style.removeProperty("--dx");
+                el.style.removeProperty("--dy");
               }
             });
-          }, { threshold: 0.1 });
+          };
 
-          document.querySelectorAll('.fade-in').forEach(el => {
-            observer.observe(el);
-          });
+          el.addEventListener("pointerdown", onDown);
+          window.addEventListener("pointermove", onMove, { passive: true });
+          window.addEventListener("pointerup", onUp, { passive: true });
         };
 
-        // GSAP Animations
-        const initGSAP = () => {
+        // ===== Cursor + Magnetic + GSAP Reveal + Void Canvas =====
+        onMounted(async () => {
+          // CSS vars
+          document.documentElement.style.setProperty("--bg", profileData.theme.bg);
+          document.documentElement.style.setProperty("--fg", profileData.theme.fg);
+          document.documentElement.style.setProperty("--accent", profileData.theme.accent);
+
+          // Icons
+          lucide.createIcons();
+
+          // GSAP reveal
           gsap.registerPlugin(ScrollTrigger);
+          gsap.from(".heroIn", { y: 22, opacity: 0, duration: 0.9, ease: "power3.out", stagger: 0.06 });
 
-          // Hero animations
-          gsap.from('.hero-tag', {
-            opacity: 0,
-            y: 20,
-            duration: 0.8,
-            delay: 0.3
-          });
-
-          gsap.from('.hero-title', {
-            opacity: 0,
-            y: 30,
-            duration: 1,
-            delay: 0.5
-          });
-
-          gsap.from('.hero-subtitle', {
-            opacity: 0,
-            y: 20,
-            duration: 0.8,
-            delay: 0.7
-          });
-
-          gsap.from('.hero-cta', {
-            opacity: 0,
-            y: 20,
-            duration: 0.8,
-            delay: 0.9
-          });
-
-          // Floating cards animation
-          gsap.from('.float-card', {
-            opacity: 0,
-            y: 50,
-            stagger: 0.1,
-            duration: 1,
-            delay: 1.2,
-            ease: 'power3.out'
-          });
-
-          // Avatar pulse animation
-          gsap.from('.avatar-container', {
-            scale: 0.8,
-            opacity: 0,
-            duration: 1,
-            delay: 0.2,
-            ease: 'back.out(1.7)'
-          });
-        };
-
-        onMounted(() => {
-          init3DBackground();
-          initGSAP();
-          observeElements();
-          
-          // Smooth scroll for navigation
-          document.querySelectorAll('nav a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function(e) {
-              e.preventDefault();
-              const target = document.querySelector(this.getAttribute('href'));
-              if (target) {
-                const offsetTop = target.offsetTop - 88; // Account for fixed navbar height
-                window.scrollTo({
-                  top: offsetTop,
-                  behavior: 'smooth'
-                });
-              }
+          gsap.utils.toArray("section").forEach((sec) => {
+            gsap.from(sec, {
+              scrollTrigger: { trigger: sec, start: "top 80%" },
+              y: 26, opacity: 0, duration: 0.85, ease: "power3.out"
             });
           });
+
+          // Cursor
+          const cursor = document.getElementById("cursor");
+          const ring = document.getElementById("cursorRing");
+          let mx = innerWidth/2, my = innerHeight/2;
+          let cx = mx, cy = my, rx = mx, ry = my;
+
+          window.addEventListener("mousemove", (e) => { mx = e.clientX; my = e.clientY; }, { passive: true });
+
+          gsap.ticker.add(() => {
+            cx += (mx - cx) * 0.28;
+            cy += (my - cy) * 0.28;
+            rx += (mx - rx) * 0.14;
+            ry += (my - ry) * 0.14;
+            cursor.style.left = cx + "px";
+            cursor.style.top = cy + "px";
+            ring.style.left = rx + "px";
+            ring.style.top = ry + "px";
+          });
+
+          // Magnetic
+          const magnets = document.querySelectorAll(".magnetic");
+          magnets.forEach(el => {
+            el.addEventListener("mousemove", (e) => {
+              const r = el.getBoundingClientRect();
+              const dx = e.clientX - (r.left + r.width/2);
+              const dy = e.clientY - (r.top + r.height/2);
+              gsap.to(el, { x: dx * 0.18, y: dy * 0.18, duration: 0.35, ease: "power3.out" });
+              gsap.to(ring, { width: 70, height: 70, duration: 0.22, ease: "power2.out" });
+            });
+            el.addEventListener("mouseleave", () => {
+              gsap.to(el, { x: 0, y: 0, duration: 0.45, ease: "power3.out" });
+              gsap.to(ring, { width: 56, height: 56, duration: 0.22, ease: "power2.out" });
+            });
+          });
+
+          // Attach pointer drag to avatar + bento cards (dynamic drag effect)
+          await nextTick();
+          const dragTargets = document.querySelectorAll("[data-draggable='avatar'], [data-draggable='bento']");
+          dragTargets.forEach(attachPointerDrag);
+
+          // Also enable mobile drag reorder for portfolio with pointer (long press-like)
+          // (We keep HTML5 DnD for desktop; pointer gives tactile feel for mobile.)
+          const tiles = document.querySelectorAll(".tile[draggable='true']");
+          tiles.forEach((tile, idx) => {
+            let holdTimer = null;
+            let holding = false;
+
+            tile.addEventListener("pointerdown", (ev) => {
+              // only touch/pen on mobile interactions
+              if (ev.pointerType === "mouse") return;
+              holding = false;
+              holdTimer = setTimeout(() => {
+                holding = true;
+                tile.classList.add("dragging");
+                dragFromIndex.value = idx;
+              }, 220);
+            }, { passive: true });
+
+            tile.addEventListener("pointermove", (ev) => {
+              if (!holdTimer) return;
+              // slight move cancels hold
+              if (Math.abs(ev.movementX) + Math.abs(ev.movementY) > 3 && !holding) {
+                clearTimeout(holdTimer);
+                holdTimer = null;
+              }
+            }, { passive: true });
+
+            tile.addEventListener("pointerup", () => {
+              if (holdTimer) clearTimeout(holdTimer);
+              holdTimer = null;
+              if (holding) {
+                tile.classList.remove("dragging");
+                // end; actual reorder via tap is not ideal; mobile reorder relies on desktop DnD typically.
+                // We keep it as "drag feedback" + still allow reorder on desktop.
+                holding = false;
+              }
+            }, { passive: true });
+          });
+
+          // Void canvas
+          initVoidCanvas(profileData.theme.accent);
         });
 
         return {
-          fileInput,
-          portfolioInput,
+          profileData,
+          activeExpIndex,
+
+          avatarInput,
           avatarUrl,
+          triggerAvatarUpload,
+          handleAvatarChange,
+
+          portfolioInput,
           portfolioPhotos,
-          lightboxOpen,
-          lightboxIndex,
-          triggerFileInput,
-          handleFileChange,
           triggerPortfolioUpload,
           handlePortfolioUpload,
+          deletePhoto,
+
+          dragOverIndex,
+          onDragStart,
+          onDragOver,
+          onDragLeave,
+          onDrop,
+
+          lightboxOpen,
+          lightboxIndex,
           openLightbox,
           closeLightbox,
-          scrollToSection
+          prevImage,
+          nextImage
         };
       }
-    }).mount('#app');
+    }).mount("#app");
+
+    // ===== Helpers =====
+    function cryptoRandomId(){
+      try{
+        return crypto.getRandomValues(new Uint32Array(1))[0].toString(16) + Date.now().toString(16);
+      }catch{
+        return Math.random().toString(16).slice(2) + Date.now().toString(16);
+      }
+    }
+
+    function initVoidCanvas(accent){
+      const canvas = document.getElementById("voidCanvas");
+      const ctx = canvas.getContext("2d");
+      const DPR = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
+      const state = { w: 0, h: 0, t: 0 };
+
+      function resize(){
+        state.w = canvas.width = Math.floor(window.innerWidth * DPR);
+        state.h = canvas.height = Math.floor(window.innerHeight * DPR);
+        canvas.style.width = window.innerWidth + "px";
+        canvas.style.height = window.innerHeight + "px";
+      }
+      window.addEventListener("resize", resize, { passive:true });
+      resize();
+
+      function blob(x,y,r, a, col){
+        const g = ctx.createRadialGradient(x,y,0, x,y,r);
+        g.addColorStop(0, `rgba(${col.r},${col.g},${col.b},${a})`);
+        g.addColorStop(1, `rgba(0,0,0,0)`);
+        ctx.fillStyle = g;
+        ctx.beginPath();
+        ctx.arc(x,y,r,0,Math.PI*2);
+        ctx.fill();
+      }
+
+      function hexToRgb(hex){
+        const h = hex.replace("#","").trim();
+        const full = h.length===3 ? h.split("").map(c=>c+c).join("") : h;
+        const n = parseInt(full,16);
+        return { r:(n>>16)&255, g:(n>>8)&255, b:n&255 };
+      }
+      const col = hexToRgb(accent);
+
+      function loop(){
+        state.t += 0.008;
+        ctx.clearRect(0,0,state.w,state.h);
+
+        // base
+        ctx.fillStyle = "rgba(5,5,5,1)";
+        ctx.fillRect(0,0,state.w,state.h);
+
+        const cx0 = state.w * 0.26 + Math.sin(state.t*1.22) * state.w*0.09;
+        const cy0 = state.h * 0.28 + Math.cos(state.t*1.08) * state.h*0.09;
+        const cx1 = state.w * 0.74 + Math.cos(state.t*0.92) * state.w*0.11;
+        const cy1 = state.h * 0.72 + Math.sin(state.t*1.02) * state.h*0.11;
+
+        blob(cx0, cy0, Math.min(state.w,state.h)*0.30, 0.22, col);
+        blob(cx1, cy1, Math.min(state.w,state.h)*0.34, 0.18, col);
+
+        // faint haze
+        const g = ctx.createRadialGradient(state.w*0.5, state.h*0.5, 0, state.w*0.5, state.h*0.5, Math.min(state.w,state.h)*0.62);
+        g.addColorStop(0, "rgba(255,255,255,0.06)");
+        g.addColorStop(1, "rgba(0,0,0,0)");
+        ctx.fillStyle = g;
+        ctx.fillRect(0,0,state.w,state.h);
+
+        requestAnimationFrame(loop);
+      }
+      loop();
+    }
   </script>
 </body>
 </html>
