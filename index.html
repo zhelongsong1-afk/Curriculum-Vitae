@@ -40,6 +40,7 @@
       align-items: center;
       overflow: hidden;
       background: radial-gradient(ellipse at center, #0a0a0a 0%, #000000 100%);
+      padding-top: 88px;
     }
 
     /* 3D Canvas Background */
@@ -220,13 +221,7 @@
       z-index: 3;
     }
 
-    /* Avatar Upload Section */
-    .avatar-section {
-      position: absolute;
-      top: 40px;
-      left: 60px;
-      z-index: 20;
-    }
+    /* Avatar Upload Section - Now in navbar */
 
     .avatar-container {
       width: 100px;
@@ -718,16 +713,24 @@
       .grid-2, .grid-3, .grid-4 {
         grid-template-columns: 1fr;
       }
+      
+      nav ul {
+        display: none !important;
+      }
     }
 
     @media (max-width: 768px) {
+      nav > div {
+        padding: 16px 24px !important;
+      }
+      
+      nav > div > div:first-child > div:last-child {
+        display: none;
+      }
+      
       .hero-content,
       section {
         padding: 60px 24px;
-      }
-
-      .avatar-section {
-        left: 24px;
       }
 
       .hero-title {
@@ -763,19 +766,37 @@
 </head>
 <body>
   <div id="app">
-    <!-- Avatar Upload Section -->
-    <div class="avatar-section">
-      <div class="avatar-container" @click="triggerFileInput">
-        <img v-if="avatarUrl" :src="avatarUrl" alt="Zhelong Song">
-        <div v-else class="avatar-placeholder">
-          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-            <circle cx="12" cy="7" r="4"></circle>
-          </svg>
+    <!-- Navigation Bar -->
+    <nav style="position: fixed; top: 0; left: 0; right: 0; z-index: 1000; background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(255, 255, 255, 0.08);">
+      <div style="max-width: 1400px; margin: 0 auto; padding: 20px 60px; display: flex; align-items: center; justify-content: space-between;">
+        <!-- Logo/Name -->
+        <div style="display: flex; align-items: center; gap: 16px;">
+          <div class="avatar-container" @click="triggerFileInput" style="width: 48px; height: 48px; border-width: 2px; animation: none;">
+            <img v-if="avatarUrl" :src="avatarUrl" alt="Zhelong Song">
+            <div v-else class="avatar-placeholder">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+              </svg>
+            </div>
+            <input ref="fileInput" type="file" accept="image/*" style="display: none;" @change="handleFileChange">
+          </div>
+          <div>
+            <div style="font-size: 1.1rem; font-weight: 700; color: #ffffff; letter-spacing: 0.5px;">ZHELONG SONG</div>
+            <div style="font-size: 0.7rem; color: #76B900; text-transform: uppercase; letter-spacing: 1px; margin-top: 2px;">Mechanical Engineering Researcher</div>
+          </div>
         </div>
-        <input ref="fileInput" type="file" accept="image/*" style="display: none;" @change="handleFileChange">
+        
+        <!-- Navigation Links -->
+        <ul style="display: flex; gap: 40px; list-style: none; margin: 0; padding: 0;">
+          <li><a href="#about" style="color: #b0b0b0; text-decoration: none; font-size: 0.95rem; font-weight: 500; transition: color 0.3s; position: relative;" @mouseover="e => e.target.style.color = '#76B900'" @mouseout="e => e.target.style.color = '#b0b0b0'">About</a></li>
+          <li><a href="#experience" style="color: #b0b0b0; text-decoration: none; font-size: 0.95rem; font-weight: 500; transition: color 0.3s;" @mouseover="e => e.target.style.color = '#76B900'" @mouseout="e => e.target.style.color = '#b0b0b0'">Experience</a></li>
+          <li><a href="#honors" style="color: #b0b0b0; text-decoration: none; font-size: 0.95rem; font-weight: 500; transition: color 0.3s;" @mouseover="e => e.target.style.color = '#76B900'" @mouseout="e => e.target.style.color = '#b0b0b0'">Honors</a></li>
+          <li><a href="#portfolio" style="color: #b0b0b0; text-decoration: none; font-size: 0.95rem; font-weight: 500; transition: color 0.3s;" @mouseover="e => e.target.style.color = '#76B900'" @mouseout="e => e.target.style.color = '#b0b0b0'">Portfolio</a></li>
+          <li><a href="#contact" style="color: #b0b0b0; text-decoration: none; font-size: 0.95rem; font-weight: 500; transition: color 0.3s;" @mouseover="e => e.target.style.color = '#76B900'" @mouseout="e => e.target.style.color = '#b0b0b0'">Contact</a></li>
+        </ul>
       </div>
-    </div>
+    </nav>
 
     <!-- Hero Section -->
     <section class="hero-container">
@@ -784,7 +805,7 @@
       <div class="hero-content">
         <div class="hero-text">
           <div class="hero-tag">RESEARCH & INNOVATION</div>
-          <h1 class="hero-title">Hi Zhelong,<br>Welcome to my world</h1>
+          <h1 class="hero-title">Hi Friend,<br>Welcome to my world</h1>
           <p class="hero-subtitle">
             A fully dedicated mechanical engineering researcher, making advanced manufacturing accessible through laser additive technology and welding robotics.
           </p>
@@ -1355,6 +1376,21 @@
           init3DBackground();
           initGSAP();
           observeElements();
+          
+          // Smooth scroll for navigation
+          document.querySelectorAll('nav a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+              e.preventDefault();
+              const target = document.querySelector(this.getAttribute('href'));
+              if (target) {
+                const offsetTop = target.offsetTop - 88; // Account for fixed navbar height
+                window.scrollTo({
+                  top: offsetTop,
+                  behavior: 'smooth'
+                });
+              }
+            });
+          });
         });
 
         return {
